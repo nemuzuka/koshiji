@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<appengine-web-app xmlns="http://appengine.google.com/ns/1.0">
+  <application>koshiji-trial</application>
+  <version>1</version>
+  <threadsafe>false</threadsafe>
+
+  <static-files>
+    <include path="/**.*"/>
+    <include path="/css/**.css"/>
+    <include path="/css/**.png"/>
+    <include path="/js/**.js"/>
+    <include path="/img/**.png"/>
+    <include path="/img/**.gif"/>
+    <include path="/img/**.jpg"/>
+    <include path="/favicon.ico"/>
+  </static-files>
+
+  <system-properties>
+    <property name="java.util.logging.config.file" value="WEB-INF/classes/logging.properties"/>
+    <property name="jp.co.nemuzuka.member.map.refresh.min" value="60"/>
+  </system-properties>
+
+  <ssl-enabled>true</ssl-enabled>
+  <sessions-enabled>true</sessions-enabled>
+
+</appengine-web-app>
