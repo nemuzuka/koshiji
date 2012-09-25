@@ -15,6 +15,8 @@
  */
 package jp.co.nemuzuka.koshiji.service.impl;
 
+import java.util.List;
+
 import jp.co.nemuzuka.common.UniqueKey;
 import jp.co.nemuzuka.koshiji.dao.MemberGroupConnDao;
 import jp.co.nemuzuka.koshiji.model.MemberGroupConnModel;
@@ -69,6 +71,22 @@ public class MemberGroupConnServiceImpl implements MemberGroupConnService {
         model.setSortNum(Long.MAX_VALUE);
         memberGroupConnDao.put(model);
         return model.getKey();
+    }
+
+    /* (非 Javadoc)
+     * @see jp.co.nemuzuka.koshiji.service.MemberGroupConnService#getList(com.google.appengine.api.datastore.Key)
+     */
+    @Override
+    public List<MemberGroupConnModel> getList(Key memberKey) {
+        return memberGroupConnDao.getList(memberKey);
+    }
+
+    /* (非 Javadoc)
+     * @see jp.co.nemuzuka.koshiji.service.MemberGroupConnService#getMemberList(com.google.appengine.api.datastore.Key)
+     */
+    @Override
+    public List<MemberGroupConnModel> getMemberList(Key groupKey) {
+        return memberGroupConnDao.getMemberList(groupKey);
     }
 
 }

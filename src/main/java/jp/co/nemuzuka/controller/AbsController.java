@@ -68,9 +68,9 @@ public abstract class AbsController extends Controller {
 	/** システムに登録されていないユーザからのアクセス. */
 	protected static final String MOVE_URL_NO_REGIST = "/noregist/";
 	/** システムエラー. */
-	protected static final String ERR_URL_SYSERROR = "/error/syserror/";
+	protected static final String ERR_URL_SYSERROR = "/syserror/";
 	/** Sessionタイムアウト. */
-	protected static final String ERR_SESSION_TIMEOUT = "/error/timeout/";
+	protected static final String ERR_SESSION_TIMEOUT = "/timeout/";
 	
 	/**
 	 * 終了時処理.

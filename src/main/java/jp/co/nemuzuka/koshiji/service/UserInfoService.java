@@ -13,26 +13,21 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package jp.co.nemuzuka.common;
+package jp.co.nemuzuka.koshiji.service;
+
+import jp.co.nemuzuka.entity.UserInfo;
 
 /**
- * ユニークキーを管理するenum
+ * ユーザ情報に関するService
  * @author kazumune
  */
-public enum UniqueKey {
-	/** 
-	 * MemberModel用. 
-	 * メールアドレスの一意制約
-	 */
-	member,
-	/** 
-	 * MemberGroupConnModel用.
-	 * MemberのKeyとGroupのKeyの一意制約
-	 */
-	memberGroupConn,
-    /** 
-     * MessageSeq採番用.
+public interface UserInfoService {
+
+    /**
+     * ユーザ情報作成.
+     * メールアドレスに紐付くユーザ情報を作成します。
+     * @param email メールアドレス
+     * @return ユーザ情報
      */
-    messageSeq,
-	;
+    UserInfo createUserInfo(String email);
 }

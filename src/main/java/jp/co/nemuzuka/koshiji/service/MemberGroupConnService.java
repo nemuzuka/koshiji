@@ -15,6 +15,10 @@
  */
 package jp.co.nemuzuka.koshiji.service;
 
+import java.util.List;
+
+import jp.co.nemuzuka.koshiji.model.MemberGroupConnModel;
+
 import com.google.appengine.api.datastore.Key;
 
 /**
@@ -31,4 +35,20 @@ public interface MemberGroupConnService {
      * @return 処理対象Key(既に登録されている場合、null)
      */
     Key put(Key memberKey, Key groupKey, boolean admin);
+    
+    /**
+     * 一覧取得.
+     * 指定したMemberKeyに紐付く一覧を取得します。
+     * @param key memberKey
+     * @return 該当レコード
+     */
+    List<MemberGroupConnModel> getList(Key memberKey);
+    
+    /**
+     * 一覧取得.
+     * 指定したグループに紐付く一覧を取得します。
+     * @param Key groupKey
+     * @return 該当レコード
+     */
+    List<MemberGroupConnModel> getMemberList(Key groupKey);
 }

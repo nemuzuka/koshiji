@@ -15,6 +15,10 @@
  */
 package jp.co.nemuzuka.koshiji.service;
 
+import java.util.Map;
+
+import jp.co.nemuzuka.koshiji.model.GroupModel;
+
 import com.google.appengine.api.datastore.Key;
 
 /**
@@ -30,4 +34,13 @@ public interface GroupService {
      * @return 処理対象Key
      */
     Key put(String groupName);
+    
+    /**
+     * Map取得.
+     * 指定したKey配列に合致するデータを取得します。
+     * Keyが未指定の場合、size0のListを返却します
+     * @param keys key配列
+     * @return 該当Map
+     */
+    Map<Key, GroupModel> getMap(Key...keys);
 }

@@ -16,6 +16,7 @@
 package jp.co.nemuzuka.koshiji.dao;
 
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -79,6 +80,35 @@ public class MemberGroupConnDao extends AbsDao {
         filter.add(e.memberKey.equal(memberKey));
         return getList(filter, null, e.key.asc);
     }
+
+    /**
+     * 一覧取得.
+     * 指定したGroupKeyに紐付く一覧を取得します。
+     * @param key groupKey
+     * @return 該当レコード
+     */
+    public List<MemberGroupConnModel> getMemberList(Key groupKey) {
+        MemberGroupConnModelMeta e = (MemberGroupConnModelMeta) getModelMeta();
+        Set<FilterCriterion> filter = new HashSet<FilterCriterion>();
+        filter.add(e.groupKey.equal(groupKey));
+        return getList(filter, null, e.admin.asc, e.key.asc);
+    }
+    
+    /**
+     * Set取得.
+     * 指定したGroupKeyに紐付くMemberのKeyのSetを取得します。
+     * @param groupKey groupKey
+     * @return 紐付くMemberのKey
+     */
+    public Set<Key> getMemberSet(Key groupKey) {
+        Set<Key> set = new LinkedHashSet<Key>();
+        List<MemberGroupConnModel> list = getMemberList(groupKey);
+        for(MemberGroupConnModel target : list) {
+            set.add(target.getMemberKey());
+        }
+        return set;
+    }
+    
     
     /**
      * 存在チェック.
@@ -92,7 +122,7 @@ public class MemberGroupConnDao extends AbsDao {
         Set<FilterCriterion> filter = new HashSet<FilterCriterion>();
         filter.add(e.memberKey.equal(memberKey));
         filter.add(e.groupKey.equal(groupKey));
-        List<MemberGroupConnModel> list = getList(filter, null, (InMemorySortCriterion)null);
+        List<MemberGroupConnModel> list = getList(filter, null, new InMemorySortCriterion[0]);
         if(list.size() != 1) {
             return false;
         }

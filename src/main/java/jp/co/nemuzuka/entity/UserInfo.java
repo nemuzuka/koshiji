@@ -16,6 +16,7 @@
 package jp.co.nemuzuka.entity;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import jp.co.nemuzuka.common.TimeZone;
@@ -35,15 +36,18 @@ public class UserInfo implements Serializable {
 	public String keyToString;
 	
 	/** ログインユーザのTimeZone. */
-	public TimeZone timeZone;
+	public TimeZone timeZone = TimeZone.GMT_P_9;
 	
 	/** 選択したグループのKey文字列. */
-	public String selectedGroupKeyString;
+	public String selectedGroupKeyString = "";
 	
 	/** 選択したグループの管理者であれば、true */
 	public boolean groupManager;
 	
+    /** グループMemberList. */
+    public List<LabelValueBean> memberList = new ArrayList<LabelValueBean>();
+	
 	/** 参加グループList. */
-	public List<LabelValueBean> groupList;
+	public List<LabelValueBean> groupList = new ArrayList<LabelValueBean>();
 	
 }

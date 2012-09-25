@@ -13,26 +13,28 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package jp.co.nemuzuka.common;
+package jp.co.nemuzuka.koshiji.controller.timeout;
+
+import jp.co.nemuzuka.annotation.NoRegistCheck;
+import jp.co.nemuzuka.annotation.NoSessionCheck;
+import jp.co.nemuzuka.controller.HtmlController;
+
+import org.slim3.controller.Navigation;
 
 /**
- * ユニークキーを管理するenum
+ * SessionタイムアウトエラーController.
+ * Sessionタイムアウト画面を表示します。
  * @author kazumune
  */
-public enum UniqueKey {
-	/** 
-	 * MemberModel用. 
-	 * メールアドレスの一意制約
+public class IndexController extends HtmlController {
+	/* (非 Javadoc)
+	 * @see jp.co.nemuzuka.core.controller.HtmlController#execute()
 	 */
-	member,
-	/** 
-	 * MemberGroupConnModel用.
-	 * MemberのKeyとGroupのKeyの一意制約
-	 */
-	memberGroupConn,
-    /** 
-     * MessageSeq採番用.
-     */
-    messageSeq,
-	;
+	@NoSessionCheck
+	@NoRegistCheck
+	@Override
+	protected Navigation execute() throws Exception {
+		return forward("/timeout/index.jsp");
+	}
+
 }

@@ -15,26 +15,24 @@
  */
 package jp.co.nemuzuka.koshiji.dao;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
-import jp.co.nemuzuka.koshiji.meta.GroupModelMeta;
-import jp.co.nemuzuka.koshiji.model.GroupModel;
+import jp.co.nemuzuka.koshiji.meta.MessageAddressModelMeta;
+import jp.co.nemuzuka.koshiji.model.MessageAddressModel;
 
 import org.slim3.datastore.FilterCriterion;
+import org.slim3.datastore.InMemorySortCriterion;
 import org.slim3.datastore.ModelMeta;
 
 import com.google.appengine.api.datastore.Key;
 
 /**
- * GroupModelに対するDao.
+ * MessageAddressModelに対するDao.
  * @author kazumune
  */
-public class GroupDao extends AbsDao {
+public class MessageAddressDao extends AbsDao {
 
     /* (非 Javadoc)
      * @see jp.co.nemuzuka.koshiji.dao.AbsDao#getModelMeta()
@@ -42,7 +40,7 @@ public class GroupDao extends AbsDao {
     @SuppressWarnings("rawtypes")
     @Override
     ModelMeta getModelMeta() {
-        return GroupModelMeta.get();
+        return MessageAddressModelMeta.get();
     }
 
     /* (非 Javadoc)
@@ -51,54 +49,36 @@ public class GroupDao extends AbsDao {
     @SuppressWarnings("rawtypes")
     @Override
     Class getModelClass() {
-        return GroupModel.class;
+        return MessageAddressModel.class;
     }
     
-    private static GroupDao dao = new GroupDao();
+    private static MessageAddressDao dao = new MessageAddressDao();
     
     /**
      * インスタンス取得.
      * @return インスタンス
      */
-    public static GroupDao getInstance() {
+    public static MessageAddressDao getInstance() {
         return dao;
     }
     
     /**
      * デフォルトコンストラクタ.
      */
-    private GroupDao(){}
+    private MessageAddressDao(){}
 
     /**
-     * Map取得.
-     * 指定したKey配列に合致するデータを取得します。
-     * Keyが未指定の場合、size0のListを返却します
-     * @param keys key配列
-     * @return 該当Map
-     */
-    public Map<Key, GroupModel> getMap(Key...keys) {
-        Map<Key, GroupModel> map = new LinkedHashMap<Key, GroupModel>();
-        List<GroupModel> list = getList(keys);
-        for(GroupModel target : list) {
-            map.put(target.getKey(), target);
-        }
-        return map;
-    }
-    /**
-     * グループ一覧取得.
-     * 指定したKeyに紐付くグループ一覧を取得します。
-     * Keyが未指定の場合、size0のListを返却します
-     * @param keys Key配列
+     * MessageAddress一覧取得.
+     * 指定した検索条件に紐付くMessageAddress一覧を取得します。
+     * @param memberKey 取得対象MemberKey
+     * @param groupKey 取得対象GroupKey
      * @return 該当レコード
      */
-    public List<GroupModel> getList(Key...keys) {
-        GroupModelMeta e = (GroupModelMeta) getModelMeta();
+    public List<MessageAddressModel> getList(Key memberKey, Key groupKey) {
+        MessageAddressModelMeta e = (MessageAddressModelMeta) getModelMeta();
         Set<FilterCriterion> filter = new HashSet<FilterCriterion>();
-        if(keys != null && keys.length != 0) {
-            filter.add(e.key.in(keys));
-        } else {
-            return new ArrayList<GroupModel>();
-        }
-        return getList(filter, null, e.key.asc);
+        filter.add(e.memberKey.equal(memberKey));
+        filter.add(e.groupKey.equal(groupKey));
+        return getList(filter, null, (InMemorySortCriterion[]) null);
     }
 }

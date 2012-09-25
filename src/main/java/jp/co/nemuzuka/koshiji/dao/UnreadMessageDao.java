@@ -22,8 +22,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import jp.co.nemuzuka.koshiji.meta.GroupModelMeta;
-import jp.co.nemuzuka.koshiji.model.GroupModel;
+import jp.co.nemuzuka.koshiji.meta.UnreadMessageModelMeta;
+import jp.co.nemuzuka.koshiji.model.UnreadMessageModel;
 
 import org.slim3.datastore.FilterCriterion;
 import org.slim3.datastore.ModelMeta;
@@ -31,10 +31,10 @@ import org.slim3.datastore.ModelMeta;
 import com.google.appengine.api.datastore.Key;
 
 /**
- * GroupModelに対するDao.
+ * UnreadMessageModelに対するDao.
  * @author kazumune
  */
-public class GroupDao extends AbsDao {
+public class UnreadMessageDao extends AbsDao {
 
     /* (非 Javadoc)
      * @see jp.co.nemuzuka.koshiji.dao.AbsDao#getModelMeta()
@@ -42,7 +42,7 @@ public class GroupDao extends AbsDao {
     @SuppressWarnings("rawtypes")
     @Override
     ModelMeta getModelMeta() {
-        return GroupModelMeta.get();
+        return UnreadMessageModelMeta.get();
     }
 
     /* (非 Javadoc)
@@ -51,54 +51,59 @@ public class GroupDao extends AbsDao {
     @SuppressWarnings("rawtypes")
     @Override
     Class getModelClass() {
-        return GroupModel.class;
+        return UnreadMessageModel.class;
     }
     
-    private static GroupDao dao = new GroupDao();
+    private static UnreadMessageDao dao = new UnreadMessageDao();
     
     /**
      * インスタンス取得.
      * @return インスタンス
      */
-    public static GroupDao getInstance() {
+    public static UnreadMessageDao getInstance() {
         return dao;
     }
     
     /**
      * デフォルトコンストラクタ.
      */
-    private GroupDao(){}
+    private UnreadMessageDao(){}
 
     /**
      * Map取得.
      * 指定したKey配列に合致するデータを取得します。
-     * Keyが未指定の場合、size0のListを返却します
-     * @param keys key配列
+     * Keyが未指定の場合、size0のListを返却します。
+     * KeyはMessageKeyを設定します。
+     * @param memberKey MemberKey
+     * @param messageKeys MessageKey配列
      * @return 該当Map
      */
-    public Map<Key, GroupModel> getMap(Key...keys) {
-        Map<Key, GroupModel> map = new LinkedHashMap<Key, GroupModel>();
-        List<GroupModel> list = getList(keys);
-        for(GroupModel target : list) {
-            map.put(target.getKey(), target);
+    public Map<Key, UnreadMessageModel> getMap(Key memberKey, Key...messageKeys) {
+        List<UnreadMessageModel> list = getList(memberKey, messageKeys);
+        Map<Key, UnreadMessageModel> map = new LinkedHashMap<Key, UnreadMessageModel>();
+        for(UnreadMessageModel target : list) {
+            map.put(target.getMessageKey(), target);
         }
         return map;
     }
+    
     /**
-     * グループ一覧取得.
-     * 指定したKeyに紐付くグループ一覧を取得します。
-     * Keyが未指定の場合、size0のListを返却します
-     * @param keys Key配列
+     * 未読Message一覧取得.
+     * 指定したMemberのMessageKeyに紐付く未読Message一覧を取得します。
+     * MessageKeyが未指定の場合、size0のListを返却します
+     * @param memberKey MemberKey
+     * @param messageKeys MessageKey配列
      * @return 該当レコード
      */
-    public List<GroupModel> getList(Key...keys) {
-        GroupModelMeta e = (GroupModelMeta) getModelMeta();
+    public List<UnreadMessageModel> getList(Key memberKey, Key...messageKeys) {
+        UnreadMessageModelMeta e = (UnreadMessageModelMeta) getModelMeta();
         Set<FilterCriterion> filter = new HashSet<FilterCriterion>();
-        if(keys != null && keys.length != 0) {
-            filter.add(e.key.in(keys));
+        if(messageKeys != null && messageKeys.length != 0) {
+            filter.add(e.messageKey.in(messageKeys));
         } else {
-            return new ArrayList<GroupModel>();
+            return new ArrayList<UnreadMessageModel>();
         }
+        filter.add(e.memberKey.equal(memberKey));
         return getList(filter, null, e.key.asc);
     }
 }

@@ -134,9 +134,35 @@ public abstract class AbsDao {
      * @param sort ソート順
      * @return 該当データ
      */
-    @SuppressWarnings("unchecked")
 	public <M> List<M> getList(Set<FilterCriterion> filters,
 	    Set<InMemoryFilterCriterion> memoryFilters, InMemorySortCriterion... sort) {
+        return getList(false, filters, memoryFilters, sort);
+	}
+	
+    /**
+     * 該当Keyデータ取得.
+     * 指定された検索条件、ソート順で該当Keyデータを取得します。
+     * FilterCriterionの指定のみ可能です。
+     * @param filters 検索条件
+     * @return 該当Keyデータ
+     */
+    public List<Key> getKeyList(Set<FilterCriterion> filters) {
+        return getList(true, filters, new HashSet<InMemoryFilterCriterion>(), 
+            new InMemorySortCriterion[0]);
+    }
+    
+    /**
+     * 該当データ取得.
+     * 指定された検索条件、ソート順で該当データ or 該当Keyデータを取得します。
+     * @param keyList KeyのListを取得する場合、true
+     * @param filters 検索条件
+     * @param memoryFilters 検索条件(メモリ上のフィルタ)
+     * @param sort ソート順
+     * @return 該当Keyデータ
+     */
+    @SuppressWarnings("unchecked")
+    private <M> List<M> getList(boolean keyList, Set<FilterCriterion> filters,
+        Set<InMemoryFilterCriterion> memoryFilters, InMemorySortCriterion... sort) {
         if(filters == null) {
             filters = new HashSet<FilterCriterion>();
         }
@@ -146,9 +172,15 @@ public abstract class AbsDao {
         if(sort == null) {
             sort = new InMemorySortCriterion[0];
         }
+        
+        if(keyList) {
+            return Datastore.query(getModelMeta()).filter(
+                memoryFilters.toArray(new FilterCriterion[0])).asKeyList();
+        }
+        
         return (List<M>) Datastore.query(getModelMeta()).filter(
             memoryFilters.toArray(new FilterCriterion[0])).filterInMemory(
                 filters.toArray(new InMemoryFilterCriterion[0])).sortInMemory(sort).asList();
-	}
-	
+    }
+    
 }

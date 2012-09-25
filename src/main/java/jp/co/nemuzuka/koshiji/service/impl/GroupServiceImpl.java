@@ -15,6 +15,8 @@
  */
 package jp.co.nemuzuka.koshiji.service.impl;
 
+import java.util.Map;
+
 import com.google.appengine.api.datastore.Key;
 
 import jp.co.nemuzuka.koshiji.dao.GroupDao;
@@ -53,6 +55,14 @@ public class GroupServiceImpl implements GroupService {
         model.setGroupName(groupName);
         groupDao.put(model);
         return model.getKey();
+    }
+
+    /* (非 Javadoc)
+     * @see jp.co.nemuzuka.koshiji.service.GroupService#getMap(com.google.appengine.api.datastore.Key[])
+     */
+    @Override
+    public Map<Key, GroupModel> getMap(Key... keys) {
+        return groupDao.getMap(keys);
     }
 
 }
