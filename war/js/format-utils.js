@@ -7,7 +7,7 @@
 /**
  * 引数の日時とシステム日付を比較して、
  * 年月日が一致する場合、引数の「HH:mm」を
- * 一致しない場合、引数の「yyyy/MM/dd」を文字列として返却します。
+ * 一致しない場合、引数の「MM/dd」を文字列として返却します。
  */
 function createViewTime(org) {
 	if(org == null || org == "") {
@@ -24,7 +24,8 @@ function createViewTime(org) {
 		var timeFormat = new DateFormat("HH:mm");
 		return timeFormat.format(paramDate);
 	} else {
-		return yyyyMMddStr;
+		var MMddFormat = new DateFormat("MM/dd");
+		return MMddFormat.format(paramDate);
 	}
 }
 
