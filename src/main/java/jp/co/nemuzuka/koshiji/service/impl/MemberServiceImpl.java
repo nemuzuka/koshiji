@@ -140,6 +140,14 @@ public class MemberServiceImpl implements MemberService {
     }
 
     /* (非 Javadoc)
+     * @see jp.co.nemuzuka.koshiji.service.MemberService#getList(com.google.appengine.api.datastore.Key[])
+     */
+    @Override
+    public List<MemberModel> getList(Key... keys) {
+        return memberDao.getList(keys);
+    }
+
+    /* (非 Javadoc)
      * @see jp.co.nemuzuka.koshiji.service.MemberService#getList(java.lang.String, java.lang.String)
      */
     @Override

@@ -108,7 +108,8 @@ public class MessageSearchServiceImpl implements MessageSearchService {
         Map<Key, UnreadMessageModel> unreadMessageMap = 
                 unreadMessageDao.getMap(param.memberKey, targetMessageKey.toArray(new Key[0]));
         
-        return createResult(targetMessageList, createMemberMap, unreadMessageMap, param.limit);
+        return createResult(targetMessageList, createMemberMap, unreadMessageMap, 
+            param.memberKey, param.limit);
     }
     
     /**
@@ -118,12 +119,13 @@ public class MessageSearchServiceImpl implements MessageSearchService {
      * @param targetMessageList 表示対象MessageList
      * @param createMemberMap MemberMap
      * @param unreadMessageMap 未読MessageMap
+     * @param memberKey ログインユーザのMemberKey
      * @param limit 一覧表示件数
      * @return 戻り値
      */
     private Result createResult(List<MessageModel> targetMessageList, 
             Map<Key, MemberModel> createMemberMap, Map<Key, UnreadMessageModel> unreadMessageMap,
-            int limit) {
+            Key memberKey, int limit) {
         Result result = new Result();
         Set<Key> deleteUnreadMessageKey = new HashSet<Key>();
         SimpleDateFormat sdf = DateTimeUtils.createSdf("yyyyMMdd HHmm");
@@ -151,6 +153,10 @@ public class MessageSearchServiceImpl implements MessageSearchService {
             if(unread != null) {
                 model.setUnread(true);
                 deleteUnreadMessageKey.add(unread.getKey());
+            }
+            //作成者がログインユーザの場合、作成者である旨設定
+            if(target.getCreateMemberKey().equals(memberKey)) {
+                model.setCreate(true);
             }
             result.list.add(model);
         }

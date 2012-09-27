@@ -1,0 +1,93 @@
+@charset "utf-8";
+/*!
+ * Copyright 2012 Kazumune Katagiri. (http://d.hatena.ne.jp/nemuzuka)
+ * Licensed under the Apache License v2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
+ */
+
+body {
+	background-color:SkyBlue;
+}
+
+div.well {
+	background-color:#F9F9F9;
+}
+
+textarea.body {
+	width: 95%;
+}
+
+div.message_address {
+	background-color:white;
+	height: 6.5em;
+	overflow: auto;
+	border: 1px solid #E3E3E3;
+	-webkit-border-radius: 4px;
+	-moz-border-radius: 4px;
+	border-radius: 4px;
+}
+
+/** MessageList用 */
+.message_item {
+	background: White;
+	cursor: pointer;
+	padding: 9px 12px;
+	border-bottom: 1px solid #E3E3E3;
+}
+
+.message_item.unread {
+	background-color:LightYellow;
+}
+
+.message_item.hover {
+	background: GhostWhite;
+	color: red;
+	border-right: 1px solid #E3E3E3;
+	border-left: 1px solid #E3E3E3;
+}
+
+.message_item .incidental {
+	position: relative;
+	float: right;
+	margin-top: 1px;
+	color: #BBB;
+}
+
+.message_list_top {
+	border-top: 1px solid #E3E3E3;
+}
+
+.message_comment {
+	border: 1px solid #E3E3E3;
+	padding: 5px;
+}
+
+.message_list_footer {
+	background: white;
+	text-align: center;
+	border-bottom: 1px solid #E3E3E3;
+	min-height: 50px;
+}
+
+.message_list_footer.no_message {
+	background-color:#F9F9F9;
+}
+
+/** toast表示用. */
+.toast-container
+{
+	position:fixed;
+	text-align: center;
+	background-color: #444;
+	border:2px solid #666;
+	padding:5px;
+	color:#FFF;
+	z-index:10000;
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
+	border-radius: 5px;
+	
+	-webkit-box-shadow: 3px 3px 6px 1px #7a7a7a;
+	-moz-box-shadow: 3px 3px 6px 1px #7a7a7a;
+	box-shadow: 3px 3px 6px 1px #7a7a7a; 
+}

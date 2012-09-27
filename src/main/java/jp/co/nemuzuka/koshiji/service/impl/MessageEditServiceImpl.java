@@ -114,7 +114,7 @@ public class MessageEditServiceImpl implements MessageEditService {
         message.setBody(new Text(param.body));
         message.setCreateMemberKey(param.createMemberKey);
         message.setGroupKey(param.groupKey);
-        message.setLastUpdate(CurrentDateUtils.getInstance().getCurrentDate());
+        message.setLastUpdate(CurrentDateUtils.getInstance().getCurrentDateTime());
         message.setNo(messageSeqDao.createMessageSeq());
         messageDao.put(message);
         return message.getKey();

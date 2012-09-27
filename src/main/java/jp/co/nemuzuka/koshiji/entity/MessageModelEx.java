@@ -42,6 +42,9 @@ public class MessageModelEx implements Serializable {
     /** 未読Messageか. */
     private boolean unread;
 
+    /** 自分が作成者か. */
+    private boolean create;
+    
     /**
      * @return model
      */
@@ -97,4 +100,19 @@ public class MessageModelEx implements Serializable {
     public void setUnread(boolean unread) {
         this.unread = unread;
     }
+
+    /**
+     * @return create
+     */
+    public boolean isCreate() {
+        return create;
+    }
+
+    /**
+     * @param create セットする create
+     */
+    public void setCreate(boolean create) {
+        this.create = create;
+    }
+
 }

@@ -52,6 +52,9 @@ public class MessageModel extends AbsModel {
     
     /** シーケンス値. */
     private Long no;
+
+    /** コメント保持. */
+    private boolean comment;
     
     /**
      * 本文文字列取得.
@@ -152,5 +155,19 @@ public class MessageModel extends AbsModel {
      */
     public void setNo(Long no) {
         this.no = no;
+    }
+
+    /**
+     * @return comment
+     */
+    public boolean isComment() {
+        return comment;
+    }
+
+    /**
+     * @param comment セットする comment
+     */
+    public void setComment(boolean comment) {
+        this.comment = comment;
     }
 }

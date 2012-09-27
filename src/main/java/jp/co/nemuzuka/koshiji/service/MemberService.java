@@ -72,7 +72,16 @@ public interface MemberService {
      * @return 該当Map
      */
     Map<Key, MemberModel> getMap(Key...keys);
-    
+
+    /**
+     * List取得.
+     * 指定したKey配列に合致するデータを取得します。
+     * Keyが未指定の場合、size0のListを返却します
+     * @param keys key配列
+     * @return 該当List
+     */
+    List<MemberModel> getList(Key...keys);
+
     /**
 	 * Key取得.
 	 * 指定したメールアドレスに合致するMemberModelのKeyを取得します。

@@ -98,12 +98,12 @@ function getMsgs(msgList) {
 
 //Ajax戻り値共通エラーチェック
 function errorCheck(data) {
-	if(data.error_msgs.length != 0) {
+	if(data.errorMsg.length != 0) {
 		//エラーが存在する場合
-		alert(getMsgs(data.error_msgs));
+		alert(getMsgs(data.errorMsg));
 		
 		//Sessionタイムアウトの場合、強制的にログアウトさせる
-		if(data.status_code == -99) {
+		if(data.status == -99) {
 			moveUrl('/');
 		}
 		return false;
@@ -114,9 +114,9 @@ function errorCheck(data) {
 
 //Ajaxメッセージ表示
 function infoCheck(data) {
-	if(data.info_msgs.length != 0) {
+	if(data.infoMsg.length != 0) {
 		//メッセージが存在する場合
-		var msg = getMsgs(data.info_msgs);
+		var msg = getMsgs(data.infoMsg);
 		viewToastMsg(msg);
 	}
 	return;
@@ -126,13 +126,6 @@ function infoCheck(data) {
 function viewToastMsg(msg) {
 	var t = $.toaster({showTime:1000, centerX:true, centerY:true});
 	t.toast(msg);
-}
-
-//Token再設定
-//metaタグ内に存在するtoken情報をリクエストパラメータに設定します
-//rails固有処理なので、一元化します
-function setToken(params) {
-	params["authenticity_token"] = $("meta[name=csrf-token]").attr("content");
 }
 
 /**
@@ -395,6 +388,21 @@ function prependDummyText(id) {
  */
 function removeDummyText(id) {
 	$("#" + id + "-dummy_area").remove();
+}
+
+/**
+ * チェックボックス値取得.
+ * 指定したnameのcheckboxのcheck状態になっている値を配列で取得します。
+ */
+function createArray4Checkbox(name) {
+	var cb = $("input:checkbox[@name='" + name + "']");
+	var retArray = [];
+	$.each(cb, function() {
+		if ($(this).prop('checked') == true){
+			retArray.push($(this).val());
+		}
+	});
+	return retArray;
 }
 
 //textArea項目表示時のエスケープ処理
