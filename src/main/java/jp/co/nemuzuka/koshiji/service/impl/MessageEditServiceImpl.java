@@ -88,6 +88,37 @@ public class MessageEditServiceImpl implements MessageEditService {
     }
 
     /* (非 Javadoc)
+     * @see jp.co.nemuzuka.koshiji.service.MessageEditService#deleteAddress(com.google.appengine.api.datastore.Key, com.google.appengine.api.datastore.Key, com.google.appengine.api.datastore.Key)
+     */
+    @Override
+    public void deleteAddress(Key messageKey, Key memberKey, Key groupKey) {
+        //MemberがGroupと関連づいていない場合、処理終了
+        if(memberGroupConnDao.isJoinMember(memberKey, groupKey) == false) {
+            return;
+        }
+
+        //Messageを取得
+        MessageModel message = messageDao.get(messageKey);
+        if(message == null) {
+            //存在しない場合、処理終了
+            return;
+        }
+        
+        List<MessageAddressModel> list = null;
+        if(message.getCreateMemberKey().equals(memberKey)) {
+            //作成者が削除した場合、Messageと紐付く全てのユーザを削除
+            list = messageAddressDao.getList4Message(messageKey, groupKey);
+        } else {
+            //作成者以外の場合、Messageと自分のユーザ関連を削除
+            list = messageAddressDao.getList4Member(messageKey, groupKey, memberKey);
+        }
+        
+        for(MessageAddressModel target : list) {
+            messageAddressDao.delete(target.getKey());
+        }
+    }
+
+    /* (非 Javadoc)
      * @see jp.co.nemuzuka.koshiji.service.MessageEditService#createComment(jp.co.nemuzuka.koshiji.service.MessageEditService.CreateCommentParam)
      */
     @Override

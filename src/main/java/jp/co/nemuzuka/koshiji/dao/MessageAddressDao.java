@@ -106,14 +106,27 @@ public class MessageAddressDao extends AbsDao {
      * @return 存在する場合、true
      */
     public boolean isExistsMember(Key messageKey, Key groupKey, Key memberKey) {
+        if(getList4Member(messageKey, groupKey, memberKey).size() != 1) {
+            return false;
+        }
+        return true;
+    }
+    
+    /**
+     * MessageAddress一覧取得存在チェック.
+     * Message、Memberに紐付くデータを取得します。
+     * @param messageKey MessageKey
+     * @param groupKey GroupKey
+     * @param memberKey MemberKey
+     * @return 該当データ
+     */
+    public List<MessageAddressModel> getList4Member(Key messageKey, Key groupKey, Key memberKey) {
         MessageAddressModelMeta e = (MessageAddressModelMeta) getModelMeta();
         Set<FilterCriterion> filter = new HashSet<FilterCriterion>();
         filter.add(e.messageKey.equal(messageKey));
         filter.add(e.groupKey.equal(groupKey));
         filter.add(e.memberKey.equal(memberKey));
-        if(getList(filter, null, (InMemorySortCriterion[]) null).size() != 1) {
-            return false;
-        }
-        return true;
+        return getList(filter, null, (InMemorySortCriterion[]) null);
     }
+    
 }

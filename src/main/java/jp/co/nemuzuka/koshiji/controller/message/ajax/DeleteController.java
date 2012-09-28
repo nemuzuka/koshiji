@@ -15,40 +15,40 @@
  */
 package jp.co.nemuzuka.koshiji.controller.message.ajax;
 
-import java.util.List;
-
+import jp.co.nemuzuka.annotation.TokenCheck;
 import jp.co.nemuzuka.controller.JsonController;
 import jp.co.nemuzuka.entity.JsonResult;
-import jp.co.nemuzuka.koshiji.entity.CommentModelEx;
-import jp.co.nemuzuka.koshiji.service.MessageSearchService;
-import jp.co.nemuzuka.koshiji.service.impl.MessageSearchServiceImpl;
+import jp.co.nemuzuka.koshiji.service.MessageEditService;
+import jp.co.nemuzuka.koshiji.service.impl.MessageEditServiceImpl;
 
 import org.slim3.datastore.Datastore;
+import org.slim3.util.ApplicationMessage;
 
 import com.google.appengine.api.datastore.Key;
 
 /**
- * Commentを検索します。
+ * Messageを削除します。
  * @author kazumune
  */
-public class SearchCommentController extends JsonController {
-
-    private MessageSearchService messageSearchService = MessageSearchServiceImpl.getInstance();
+public class DeleteController extends JsonController {
+    
+    private MessageEditService messageEditService = MessageEditServiceImpl.getInstance();
     
 	/* (非 Javadoc)
 	 * @see jp.co.nemuzuka.core.controller.JsonController#execute()
 	 */
 	@Override
+    @TokenCheck
 	protected Object execute() throws Exception {
-	    Key groupKey = Datastore.stringToKey(getUserInfo().selectedGroupKeyString);
-	    Key memberKey = Datastore.stringToKey(getUserInfo().keyToString);
-	    Key messageKey = Datastore.stringToKey(asString("messageKeyString"));
 	    
-	    List<CommentModelEx> list = messageSearchService.getCommentList(messageKey, memberKey, groupKey);
+        Key memberKey = Datastore.stringToKey(getUserInfo().keyToString);
+	    Key messageKey = Datastore.stringToKey(asString("messageKeyString"));
+	    Key groupKey = Datastore.stringToKey(getUserInfo().selectedGroupKeyString);
+        messageEditService.deleteAddress(messageKey, memberKey, groupKey);
 	    
         JsonResult jsonResult = new JsonResult();
         jsonResult.setToken(setToken());
-        jsonResult.setResult(list);
+        jsonResult.getInfoMsg().add(ApplicationMessage.get("info.success"));
         return jsonResult;
-	}    
+	}
 }

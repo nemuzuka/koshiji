@@ -43,6 +43,16 @@ public interface MessageEditService {
     void createMessage(CreateParam param);
     
     /**
+     * Message宛先削除.
+     * 指定MessageのMemberの関連を削除します。
+     * 削除対象Messageの作成Memberが引数のMemberと合致する場合、該当Messageと全ユーザの関連を削除します。
+     * @param messageKey 削除対象MessageKey
+     * @param memberKey MemberKey
+     * @param groupKey GroupKey
+     */
+    void deleteAddress(Key messageKey, Key memberKey, Key groupKey);
+    
+    /**
      * Comment登録.
      * Commentを登録します。
      * 1.登録Memberが指定グループに紐付いていない場合、終了

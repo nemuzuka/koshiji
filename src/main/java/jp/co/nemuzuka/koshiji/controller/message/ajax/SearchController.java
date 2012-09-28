@@ -38,7 +38,8 @@ public class SearchController extends JsonController {
 	protected Object execute() throws Exception {
 	    SearchParam param = new SearchParam();
 	    param.groupKey = Datastore.stringToKey(getUserInfo().selectedGroupKeyString);
-	    param.limit = 5;
+	    String limit = System.getProperty("jp.co.nemuzuka.message.limit", "10");
+	    param.limit = Integer.valueOf(limit);
 	    param.memberKey = Datastore.stringToKey(getUserInfo().keyToString);
 	    param.pageNo = asInteger("pageNo");
 	    

@@ -155,25 +155,28 @@ function renderCommentList($msgComment, keyToString, create) {
 	
 	var $btnToolbarDiv = $("<div />").addClass("btn-toolbar");
 	var $btnGroupDiv = $("<div />").addClass("btn-group");
-	var $addCommentA = $("<a />").addClass("btn");
+	var $addCommentA = $("<a />").addClass("btn").attr({"title":"メッセージにコメントを追加します"});
 	var $commentSpan = $("<span />").text("コメント追加");
 	$addCommentA.append($("<i />").addClass("icon-comment")).append($commentSpan);
 	$addCommentA.on("click", function(){
 		$commentInputArea.show('fast');
 	});
 
-	var $removeCommentA = $("<a />").addClass("btn");
-	var $removeCommentSpan = $("<span />");
-	var $removeCommentIcon = $("<i />")
+	var $removeMessageA = $("<a />").addClass("btn");
+	var $removeMessageSpan = $("<span />");
+	var $removeMessageIcon = $("<i />")
 	if(create) {
-		$removeCommentSpan.text("削除");
-		$removeCommentIcon.addClass("icon-trash");
+		$removeMessageSpan.text("削除").attr({"title":"メッセージを削除します"});
+		$removeMessageIcon.addClass("icon-trash");
 	} else {
-		$removeCommentSpan.text("非表示");
-		$removeCommentIcon.addClass("icon-remove");
+		$removeMessageSpan.text("非表示").attr({"title":"メッセージを非表示にします"});
+		$removeMessageIcon.addClass("icon-remove");
 	}
-	$removeCommentA.append($removeCommentIcon).append($removeCommentSpan);
-	$btnGroupDiv.append($addCommentA).append($removeCommentA);
+	$removeMessageA.on("click", function(){
+		deleteMessage($msgComment, keyToString);
+	});
+	$removeMessageA.append($removeMessageIcon).append($removeMessageSpan);
+	$btnGroupDiv.append($addCommentA).append($removeMessageA);
 	$btnToolbarDiv.append($btnGroupDiv);
 	$msgComment.append($btnToolbarDiv);
 	
@@ -188,11 +191,43 @@ function renderCommentList($msgComment, keyToString, create) {
 	);
 }
 
+//Message非表示
+function deleteMessage($msgComment, keyToString) {
+	if(window.confirm("メッセージを削除します。本当によろしいですか？") == false) {
+		return;
+	}
+
+	var params = {};
+	params["messageKeyString"] = keyToString;
+	params["jp.co.nemuzuka.token"] = $("#token").val();
+	
+	setAjaxDefault();
+	return $.ajax({
+		type: "POST",
+		url: "/message/ajax/delete",
+		data: params
+	}).pipe(
+		function(data) {
+
+			//共通エラーチェック
+			if(errorCheck(data) == false) {
+				return;
+			}
+
+			//tokenの設定
+			$("#token").val(data.token);
+			//Messageを非表示にする
+			infoCheck(data);
+			$msgComment.parent().remove();
+		}
+	);
+}
+
 //CommentListを描画します
 function createCommentListArea($appendTarget, messageKeyToString) {
 
 	var params = {};
-	params["messageKeyToString"] = messageKeyToString;
+	params["messageKeyString"] = messageKeyToString;
 	
 	setAjaxDefault();
 	return $.ajax({
@@ -258,6 +293,10 @@ function createCommentDiv(data, messageKeyToString) {
 
 //コメント削除
 function deleteComment($buttonObj, messageKeyString, commentKeyString) {
+	if(window.confirm("コメントを削除します。本当によろしいですか？") == false) {
+		return;
+	}
+
 	var params = {};
 	params["messageKeyString"] = messageKeyString;
 	params["commentKeyString"] = commentKeyString;
