@@ -106,4 +106,18 @@ public class UnreadMessageDao extends AbsDao {
         filter.add(e.memberKey.equal(memberKey));
         return getList(filter, null, e.key.asc);
     }
+    
+    /**
+     * 未読データ一覧取得.
+     * 指定したMessageの未読データを取得します。
+     * @param messageKey MessageKey
+     * @return 未読データ一覧
+     */
+    public List<UnreadMessageModel> getList(Key messageKey) {
+        UnreadMessageModelMeta e = (UnreadMessageModelMeta) getModelMeta();
+        Set<FilterCriterion> filter = new HashSet<FilterCriterion>();
+        filter.add(e.messageKey.equal(messageKey));
+        return getList(filter, null, e.key.asc);
+    }
+    
 }

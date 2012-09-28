@@ -24,12 +24,14 @@ import java.util.List;
 import jp.co.nemuzuka.common.TimeZone;
 import jp.co.nemuzuka.entity.GlobalTransaction;
 import jp.co.nemuzuka.entity.TransactionEntity;
+import jp.co.nemuzuka.koshiji.dao.CommentDao;
 import jp.co.nemuzuka.koshiji.dao.GroupDao;
 import jp.co.nemuzuka.koshiji.dao.MemberDao;
 import jp.co.nemuzuka.koshiji.dao.MemberGroupConnDao;
 import jp.co.nemuzuka.koshiji.dao.MessageAddressDao;
 import jp.co.nemuzuka.koshiji.dao.MessageDao;
 import jp.co.nemuzuka.koshiji.dao.UnreadMessageDao;
+import jp.co.nemuzuka.koshiji.model.CommentModel;
 import jp.co.nemuzuka.koshiji.model.GroupModel;
 import jp.co.nemuzuka.koshiji.model.MemberGroupConnModel;
 import jp.co.nemuzuka.koshiji.model.MemberModel;
@@ -59,6 +61,7 @@ public class MessageEditServiceImplTest extends AppEngineTestCase4HRD {
     UnreadMessageDao unreadMessageDao = UnreadMessageDao.getInstance();
     MemberDao memberDao = MemberDao.getInstance();
 	GroupDao groupDao = GroupDao.getInstance();
+	CommentDao commentDao = CommentDao.getInstance();
     
 	List<Key> memberKeyList;
 	List<Key> groupKeyList;
@@ -186,7 +189,7 @@ public class MessageEditServiceImplTest extends AppEngineTestCase4HRD {
         GlobalTransaction.transaction.get().begin();
         
         //宛先の確認
-        //メンバー1はシティグループに含まれない
+        //メンバー1は指定グループに含まれない
         List<MessageAddressModel> actualMessageAddresses = messageAddressDao.getAllList();
         assertThat(actualMessageAddresses.size(), is(2));
         MessageAddressModel actualMessageAddress = actualMessageAddresses.get(0);
@@ -252,6 +255,165 @@ public class MessageEditServiceImplTest extends AppEngineTestCase4HRD {
         List<MessageModel> actualMessages = messageDao.getAllList();
         assertThat(actualMessages.size(), is(0));
     }
+
+    /**
+     * createCommentのテスト.
+     * グループ0/メンバー1が全員に当てたメッセージに対してメンバー0がコメント登録
+     */
+    @Test
+    public void testCreateComment() {
+        createInitData();
+        
+        CreateParam param = new CreateParam();
+        param.body = "ほえほえほえ";
+        param.createMemberKey = memberKeyList.get(1);
+        param.groupKey = groupKeyList.get(0);
+        param.memberKeyStrings = new String[]{MessageEditService.TARGET_ALL};
+        
+        service.createMessage(param);
+        
+        //未読を削除
+        List<UnreadMessageModel> unreadMessagees = unreadMessageDao.getAllList();
+        for(UnreadMessageModel target : unreadMessagees) {
+            unreadMessageDao.delete(target.getKey());
+        }
+        
+        GlobalTransaction.transaction.get().commit();
+        GlobalTransaction.transaction.get().begin();
+        List<MessageModel> actualMessages = messageDao.getAllList();
+        
+        MessageEditService.CreateCommentParam commentParam = new MessageEditService.CreateCommentParam();
+        commentParam.body = "コメントですよん";
+        commentParam.createMemberKey = memberKeyList.get(0);
+        commentParam.groupKey = groupKeyList.get(0);
+        commentParam.messageKey = actualMessages.get(0).getKey();
+        service.createComment(commentParam);
+        GlobalTransaction.transaction.get().commit();
+        GlobalTransaction.transaction.get().begin();
+        
+        List<CommentModel> actualComments = commentDao.getAllList();
+        assertThat(actualComments.size(), is(1));
+        CommentModel actualComment = actualComments.get(0);
+        assertThat(actualComment.getBody().getValue(), is("コメントですよん"));
+        assertThat(actualComment.getCreateMemberKey(), is(commentParam.createMemberKey));
+        assertThat(actualComment.getMessageKey(), is(commentParam.messageKey));
+        
+        //未読の確認
+        //自分は未読として登録されない
+        List<UnreadMessageModel> actualUnreadMessagees = unreadMessageDao.getAllList();
+        assertThat(actualUnreadMessagees.size(), is(1));
+        UnreadMessageModel actualUnreadMessage = actualUnreadMessagees.get(0);
+        assertThat(actualUnreadMessage.getMemberKey(), is(memberKeyList.get(1)));
+        assertThat(actualUnreadMessage.getMessageKey(), is(commentParam.messageKey));
+        
+    }
+
+    /**
+     * createCommentのテスト.
+     * グループ0/メンバー1が全員に当てたメッセージに対して
+     * グループ0に紐付かないメンバー2がコメント登録
+     */
+    @Test
+    public void testCreateComment2() {
+        createInitData();
+        
+        CreateParam param = new CreateParam();
+        param.body = "ほえほえほえ";
+        param.createMemberKey = memberKeyList.get(1);
+        param.groupKey = groupKeyList.get(0);
+        param.memberKeyStrings = new String[]{MessageEditService.TARGET_ALL};
+        
+        service.createMessage(param);
+        
+        GlobalTransaction.transaction.get().commit();
+        GlobalTransaction.transaction.get().begin();
+        List<MessageModel> actualMessages = messageDao.getAllList();
+        
+        MessageEditService.CreateCommentParam commentParam = new MessageEditService.CreateCommentParam();
+        commentParam.body = "コメントですよん";
+        commentParam.createMemberKey = memberKeyList.get(2);
+        commentParam.groupKey = groupKeyList.get(0);
+        commentParam.messageKey = actualMessages.get(0).getKey();
+        service.createComment(commentParam);
+        GlobalTransaction.transaction.get().commit();
+        GlobalTransaction.transaction.get().begin();
+        
+        List<CommentModel> actualComments = commentDao.getAllList();
+        assertThat(actualComments.size(), is(0));
+    }
+    
+    /**
+     * createCommentのテスト.
+     * グループ1/メンバー0がメンバー0に当てたメッセージに対して
+     * 宛先に紐付かないメンバー2がコメント登録
+     */
+    @Test
+    public void testCreateComment3() {
+        createInitData();
+        
+        CreateParam param = new CreateParam();
+        param.body = "ほえほえほえ";
+        param.createMemberKey = memberKeyList.get(0);
+        param.groupKey = groupKeyList.get(1);
+        param.memberKeyStrings = new String[]{
+            Datastore.keyToString(memberKeyList.get(0))
+            };
+        
+        service.createMessage(param);
+        
+        GlobalTransaction.transaction.get().commit();
+        GlobalTransaction.transaction.get().begin();
+        List<MessageModel> actualMessages = messageDao.getAllList();
+        
+        MessageEditService.CreateCommentParam commentParam = new MessageEditService.CreateCommentParam();
+        commentParam.body = "コメントですよん";
+        commentParam.createMemberKey = memberKeyList.get(2);
+        commentParam.groupKey = groupKeyList.get(1);
+        commentParam.messageKey = actualMessages.get(0).getKey();
+        service.createComment(commentParam);
+        GlobalTransaction.transaction.get().commit();
+        GlobalTransaction.transaction.get().begin();
+        
+        List<CommentModel> actualComments = commentDao.getAllList();
+        assertThat(actualComments.size(), is(0));
+    }
+    
+    /**
+     * createCommentのテスト.
+     * グループ1/メンバー0がメンバー0に当てたメッセージに対して
+     * グループ0/メンバー0がコメント登録
+     */
+    @Test
+    public void testCreateComment4() {
+        createInitData();
+        
+        CreateParam param = new CreateParam();
+        param.body = "ほえほえほえ";
+        param.createMemberKey = memberKeyList.get(0);
+        param.groupKey = groupKeyList.get(1);
+        param.memberKeyStrings = new String[]{
+            Datastore.keyToString(memberKeyList.get(0))
+            };
+        
+        service.createMessage(param);
+        
+        GlobalTransaction.transaction.get().commit();
+        GlobalTransaction.transaction.get().begin();
+        List<MessageModel> actualMessages = messageDao.getAllList();
+        
+        MessageEditService.CreateCommentParam commentParam = new MessageEditService.CreateCommentParam();
+        commentParam.body = "コメントですよん";
+        commentParam.createMemberKey = memberKeyList.get(0);
+        commentParam.groupKey = groupKeyList.get(0);
+        commentParam.messageKey = actualMessages.get(0).getKey();
+        service.createComment(commentParam);
+        GlobalTransaction.transaction.get().commit();
+        GlobalTransaction.transaction.get().begin();
+        
+        List<CommentModel> actualComments = commentDao.getAllList();
+        assertThat(actualComments.size(), is(0));
+    }
+    
     
 	/**
 	 * 事前データ作成.

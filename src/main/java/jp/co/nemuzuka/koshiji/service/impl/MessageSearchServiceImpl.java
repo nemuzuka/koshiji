@@ -16,17 +16,21 @@
 package jp.co.nemuzuka.koshiji.service.impl;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import jp.co.nemuzuka.koshiji.dao.CommentDao;
 import jp.co.nemuzuka.koshiji.dao.MemberDao;
 import jp.co.nemuzuka.koshiji.dao.MemberGroupConnDao;
 import jp.co.nemuzuka.koshiji.dao.MessageAddressDao;
 import jp.co.nemuzuka.koshiji.dao.MessageDao;
 import jp.co.nemuzuka.koshiji.dao.UnreadMessageDao;
+import jp.co.nemuzuka.koshiji.entity.CommentModelEx;
 import jp.co.nemuzuka.koshiji.entity.MessageModelEx;
+import jp.co.nemuzuka.koshiji.model.CommentModel;
 import jp.co.nemuzuka.koshiji.model.MemberModel;
 import jp.co.nemuzuka.koshiji.model.MessageAddressModel;
 import jp.co.nemuzuka.koshiji.model.MessageModel;
@@ -48,6 +52,7 @@ public class MessageSearchServiceImpl implements MessageSearchService {
     MemberGroupConnDao memberGroupConnDao = MemberGroupConnDao.getInstance();
     UnreadMessageDao unreadMessageDao = UnreadMessageDao.getInstance();
     MemberDao memberDao = MemberDao.getInstance();
+    CommentDao commentDao = CommentDao.getInstance();
     
     private static MessageSearchServiceImpl impl = new MessageSearchServiceImpl();
     
@@ -110,6 +115,60 @@ public class MessageSearchServiceImpl implements MessageSearchService {
         
         return createResult(targetMessageList, createMemberMap, unreadMessageMap, 
             param.memberKey, param.limit);
+    }
+
+    /* (非 Javadoc)
+     * @see jp.co.nemuzuka.koshiji.service.MessageSearchService#getCommentList(com.google.appengine.api.datastore.Key, com.google.appengine.api.datastore.Key, com.google.appengine.api.datastore.Key)
+     */
+    @Override
+    public List<CommentModelEx> getCommentList(Key messageKey, Key memberKey,
+            Key groupKey) {
+        List<CommentModelEx> list = new ArrayList<CommentModelEx>();
+        
+        //MemberがGroupと関連づいていない場合、処理終了
+        if(memberGroupConnDao.isJoinMember(memberKey, groupKey) == false) {
+            return list;
+        }
+        if(messageAddressDao.isExistsMember(messageKey, groupKey, memberKey) == false) {
+            return list;
+        }
+        MessageModel message = messageDao.get(messageKey);
+        if(message == null || message.getGroupKey().equals(groupKey) == false) {
+            return list;
+        }
+        
+        //Commentを取得
+        List<CommentModel> commentList = commentDao.getList(messageKey);
+        Set<Key> createMemberKey = new HashSet<Key>();
+        for(CommentModel target : commentList) {
+            if(target.getCreateMemberKey() != null) {
+                createMemberKey.add(target.getCreateMemberKey());
+            }
+        }
+        //作成者名を取得する為にMemberを取得
+        Map<Key, MemberModel> createMemberMap = 
+                memberDao.getMap(createMemberKey.toArray(new Key[0]));
+        
+        SimpleDateFormat sdf = DateTimeUtils.createSdf("yyyyMMdd HHmm");
+        for(CommentModel target : commentList) {
+            CommentModelEx ex = new CommentModelEx();
+            ex.setModel(target);
+            ex.setLastUpdate(sdf.format(target.getLastUpdate()));
+            MemberModel member = createMemberMap.get(target.getCreateMemberKey());
+            ex.setCreateMemberName("");
+            if(member != null) {
+                ex.setCreateMemberName(member.getName());
+            }
+            //コメントの作成者 or メッセージ作成者の場合、コメント削除可
+            if(target.getCreateMemberKey() != null) {
+                if(target.getCreateMemberKey().equals(memberKey) || 
+                        message.getCreateMemberKey().equals(memberKey)) {
+                    ex.setDeleteAuth(true);
+                }
+            }
+            list.add(ex);
+        }
+        return list;
     }
     
     /**

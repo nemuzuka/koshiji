@@ -24,7 +24,7 @@
         </c:forEach>
 	</div>
 	<div align="center" style="padding-top:10px;" class="controls">
-		<button id="message_create" class="btn btn-primary" type="button">送信する</button>
+		<button id="message_create" class="btn btn-primary">メッセージを送る</button>
 	</div>
 
 </c:param>

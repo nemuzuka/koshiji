@@ -61,16 +61,6 @@ function renderList(data, pageNo) {
 		if(unread) {
 			$msgDiv.addClass("unread");
 		}
-		$msgDiv.on("click", function(event){
-			var target = $(event.target);
-			if(target.is("a")) {
-				//aタグのクリックの場合、divタグのクリックイベントは発生させない
-				return;
-			}
-			var $msgComment = $(this).children(".message_comment");
-			var keyToString = model.keyToString;
-			toggleComment($msgComment, keyToString, create);
-		});
 		$msgDiv.on({
 			"mouseenter":function(){
 				$(this).addClass("hover");
@@ -78,6 +68,17 @@ function renderList(data, pageNo) {
 			"mouseleave":function(){
 				$(this).removeClass("hover");
 			}
+		});
+		$msgDiv.on("click", function(event){
+			var target = $(event.target);
+			if(target.is("a") || target.is("span") || 
+					target.is("i") || target.is("textarea")) {
+				//指定タグのクリックの場合、divタグのクリックイベントは発生させない
+				return;
+			}
+			var $msgCommentDiv = $(this).children(".message_comment");
+			var keyToString = model.keyToString;
+			toggleComment($msgCommentDiv, keyToString, create);
 		});
 
 		//Header部の生成
@@ -94,13 +95,13 @@ function renderList(data, pageNo) {
 		if(unread) {
 			$bell_icon = $("<i />").addClass("icon-bell");
 		}
-		var $createMemberSpan = $("<span />").text(createMemberName);
+		var $createMemberSpan = $("<div />").text(createMemberName);
 		$msgHeader.append($small).append($bell_icon).append($createMemberSpan);
 		
 		//content部の生成
 		var $msgContent = $("<div />").addClass("message_content");
-		var $contentSpan = $("<span />").addClass("lead").html(escapeTextArea(model.bodyText));
-		$msgContent.append($contentSpan);
+		var $contentP = $("<p />").addClass("lead").html(escapeTextArea(model.bodyText));
+		$msgContent.append($contentP);
 		
 		//comment部の生成
 		var $msgComment = $("<div />").addClass("message_comment").css({"display":"none"});
@@ -142,16 +143,214 @@ function toggleComment($msgComment, keyToString, create) {
 //
 function renderCommentList($msgComment, keyToString, create) {
 	$msgComment.empty();
-	alert("よんだよね" + create);
-	$msgComment.slideToggle('fast');
+	
+	//コメント入力エリアを作成
+	var $commentInputArea = $("<div />").addClass("massage_comment_input_area").css({"display":"none"});
+	var $commentTextArea = $("<textarea />").addClass("body").attr({"rows":"4"}).attr({"placeholder":"コメント？"});
+	var $commentExecuteButton = $("<a />").addClass("btn btn-primary").text("コメントを追加する").css({"margin-top":"5px"});
+	$commentExecuteButton.on("click", function(){
+		createComment($commentTextArea, keyToString);
+	});
+	$commentInputArea.append($commentTextArea).append($commentExecuteButton);
+	
+	var $btnToolbarDiv = $("<div />").addClass("btn-toolbar");
+	var $btnGroupDiv = $("<div />").addClass("btn-group");
+	var $addCommentA = $("<a />").addClass("btn");
+	var $commentSpan = $("<span />").text("コメント追加");
+	$addCommentA.append($("<i />").addClass("icon-comment")).append($commentSpan);
+	$addCommentA.on("click", function(){
+		$commentInputArea.show('fast');
+	});
+
+	var $removeCommentA = $("<a />").addClass("btn");
+	var $removeCommentSpan = $("<span />");
+	var $removeCommentIcon = $("<i />")
+	if(create) {
+		$removeCommentSpan.text("削除");
+		$removeCommentIcon.addClass("icon-trash");
+	} else {
+		$removeCommentSpan.text("非表示");
+		$removeCommentIcon.addClass("icon-remove");
+	}
+	$removeCommentA.append($removeCommentIcon).append($removeCommentSpan);
+	$btnGroupDiv.append($addCommentA).append($removeCommentA);
+	$btnToolbarDiv.append($btnGroupDiv);
+	$msgComment.append($btnToolbarDiv);
+	
+	//コメント入力エリアを描画
+	$msgComment.append($commentInputArea);
+
+	//指定したメッセージに紐付くコメントを取得
+	createCommentListArea($msgComment, keyToString).pipe(
+		function(data) {
+			$msgComment.slideToggle('fast');
+		}
+	);
 }
+
+//CommentListを描画します
+function createCommentListArea($appendTarget, messageKeyToString) {
+
+	var params = {};
+	params["messageKeyToString"] = messageKeyToString;
+	
+	setAjaxDefault();
+	return $.ajax({
+		type: "POST",
+		url: "/message/ajax/searchComment",
+		data: params
+	}).pipe(
+		function(data) {
+
+			//共通エラーチェック
+			if(errorCheck(data) == false) {
+				return;
+			}
+
+			//一覧のdivを作成する
+			var $commentDiv = createCommentDiv(data, messageKeyToString);
+			$appendTarget.append($commentDiv);
+		}
+	);
+}
+
+//Comment一覧描画
+function createCommentDiv(data, messageKeyToString) {
+	//tokenの設定
+	$("#token").val(data.token);
+
+	var $retDiv = $("<div />").addClass("message_comment_list");
+	var $table = $("<table />").addClass("table table-hover");
+	var $tbody = $("<tbody />");
+	var result = data.result;
+	$.each(result, function(){
+		var model = this.model;
+		var createMemberName = this.createMemberName;
+		var lastUpdate = this.lastUpdate;
+		var canDelete = this.deleteAuth;
+		var $delButton = $("<a />").attr({"href":"javascript:void(0)"}).addClass("btn btn-mini");
+		$delButton.append($("<i />").addClass("icon-trash"));
+		$delButton.on("click", function(){
+			deleteComment($(this), messageKeyToString, model.keyToString)
+		});
+		if(canDelete == false) {
+			$delButton = "";
+		}
+		
+		var $tr = $("<tr />");
+		$tr.append(
+			$("<td />").attr({"width":"95%"})
+				.append($("<p />").html(escapeTextArea(model.bodyText)))
+				.append($("<p>").append($("<small />").text("(" + createViewTime(lastUpdate) + " " + createMemberName + ")")))
+		).append(
+			$("<td />").attr({"width":"5%", "align":"right"})
+				.append($delButton)
+		);
+		$tbody.append($tr);
+	});
+	$table.append($tbody);
+
+	if(result.length != 0) {
+		$retDiv.append($table);
+	}
+	return $retDiv;
+}
+
+//コメント削除
+function deleteComment($buttonObj, messageKeyString, commentKeyString) {
+	var params = {};
+	params["messageKeyString"] = messageKeyString;
+	params["commentKeyString"] = commentKeyString;
+	params["jp.co.nemuzuka.token"] = $("#token").val();
+
+	//validateチェック
+	var v = new Validate();
+	v.addRules({value:params["messageKeyString"],option:'required',error_args:"Message Key"});
+	v.addRules({value:params["commentKeyString"],option:'required',error_args:"Comment Key"});
+	if(v.execute() == false) {
+		return;
+	}
+
+	setAjaxDefault();
+	var task;
+	task = $.ajax({
+		type: "POST",
+		url: "/message/ajax/deleteComment",
+		data: params
+	}).pipe(
+		function(data) {
+
+			//共通エラーチェック
+			if(errorCheck(data) == false) {
+				return;
+			}
+			
+			//メッセージを表示して、一覧歳表示
+			infoCheck(data);
+			var $appendDiv = $buttonObj.parent().parent().parent().parent().parent().parent();
+			$appendDiv.children(".message_comment_list").remove();
+			createCommentListArea($appendDiv, messageKeyString);
+		}
+	);
+}
+
+//コメント登録
+function createComment($textArea, messageKey) {
+	var params = {};
+	params["body"] = $textArea.val();
+	params["messageKeyString"] = messageKey;
+	params["jp.co.nemuzuka.token"] = $("#token").val();
+	
+	//validateチェック
+	var v = new Validate();
+	v.addRules({value:params["body"],option:'required',error_args:"コメント"});
+	v.addRules({value:params["body"],option:'maxLength',error_args:"コメント", size:2048});
+	v.addRules({value:params["messageKeyString"],option:'required',error_args:"Message Key"});
+	if(v.execute() == false) {
+		return;
+	}
+
+	setAjaxDefault();
+	var task;
+	task = $.ajax({
+		type: "POST",
+		url: "/message/ajax/createComment",
+		data: params
+	}).pipe(
+		function(data) {
+
+			//共通エラーチェック
+			if(errorCheck(data) == false) {
+				if(data.status == -1 ) {
+					//validateの場合、tokenを再発行
+					return reSetToken();
+				}
+				return;
+			}
+			
+			//メッセージを表示して、一覧歳表示
+			infoCheck(data);
+			$textArea.val("");
+			var $appendDiv = $textArea.parent().parent();
+			$appendDiv.children(".message_comment_list").remove();
+			createCommentListArea($appendDiv, messageKey);
+		}
+	);
+}
+
 
 //メッセージ登録関連初期処理
 function initMessage() {
 	$("#message_create").on("click", function(){
 		createMessage();
 	});
-	$('#body').autoResize({
+	setAutoResize($("#body"));
+	$("#body").trigger("change");
+}
+
+//autoResize設定
+function setAutoResize($target) {
+	$target.autoResize({
 		// On resize:
 		onResize : function() {
 			$(this).css({opacity:1});
@@ -165,7 +364,6 @@ function initMessage() {
 		// More extra space:
 		extraSpace : 20
 	});
-	$("#body").trigger("change");
 }
 
 //メッセージ登録処理

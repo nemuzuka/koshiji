@@ -106,7 +106,7 @@ public abstract class AbsDao {
 			return null;
 		}
 	}
-	
+
 	/**
 	 * 全件取得.
 	 * 登録されているデータを全件取得します。

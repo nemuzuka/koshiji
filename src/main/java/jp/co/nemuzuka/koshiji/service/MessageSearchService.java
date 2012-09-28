@@ -18,6 +18,7 @@ package jp.co.nemuzuka.koshiji.service;
 import java.util.ArrayList;
 import java.util.List;
 
+import jp.co.nemuzuka.koshiji.entity.CommentModelEx;
 import jp.co.nemuzuka.koshiji.entity.MessageModelEx;
 
 import com.google.appengine.api.datastore.Key;
@@ -40,6 +41,20 @@ public interface MessageSearchService {
      * @return 検索結果
      */
     Result getList(SearchParam param);
+    
+    /**
+     * Comment一覧取得.
+     * 検索条件に合致するCommentを取得します。
+     * ・紐付くMessageの宛先にMemberが含まれていない場合
+     * ・紐付くMessageのグループとGroupが一致しない場合
+     * ・紐付くMemberとグループが紐付いていない場合
+     * サイズ0の結果を返します。
+     * @param messageKey MessageKey
+     * @param memberKey MemberKey
+     * @param groupKey GroupKey
+     * @return 検索結果
+     */
+    List<CommentModelEx> getCommentList(Key messageKey, Key memberKey, Key groupKey);
     
     /**
      * 検索条件.

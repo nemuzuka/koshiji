@@ -15,16 +15,20 @@
  */
 package jp.co.nemuzuka.koshiji.service.impl;
 
+import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.slim3.datastore.Datastore;
 
+import jp.co.nemuzuka.koshiji.dao.CommentDao;
 import jp.co.nemuzuka.koshiji.dao.MemberGroupConnDao;
 import jp.co.nemuzuka.koshiji.dao.MessageAddressDao;
 import jp.co.nemuzuka.koshiji.dao.MessageDao;
 import jp.co.nemuzuka.koshiji.dao.MessageSeqDao;
 import jp.co.nemuzuka.koshiji.dao.UnreadMessageDao;
+import jp.co.nemuzuka.koshiji.model.CommentModel;
 import jp.co.nemuzuka.koshiji.model.MessageAddressModel;
 import jp.co.nemuzuka.koshiji.model.MessageModel;
 import jp.co.nemuzuka.koshiji.model.UnreadMessageModel;
@@ -45,6 +49,7 @@ public class MessageEditServiceImpl implements MessageEditService {
     MemberGroupConnDao memberGroupConnDao = MemberGroupConnDao.getInstance();
     UnreadMessageDao unreadMessageDao = UnreadMessageDao.getInstance();
     MessageSeqDao messageSeqDao = MessageSeqDao.getInstance();
+    CommentDao commentDao = CommentDao.getInstance();
     
     private static MessageEditServiceImpl impl = new MessageEditServiceImpl();
     
@@ -81,7 +86,107 @@ public class MessageEditServiceImpl implements MessageEditService {
         //宛先・未読の作成
         createUnreadMessageAddress(messageKey, memberKeys, param.groupKey);
     }
+
+    /* (非 Javadoc)
+     * @see jp.co.nemuzuka.koshiji.service.MessageEditService#createComment(jp.co.nemuzuka.koshiji.service.MessageEditService.CreateCommentParam)
+     */
+    @Override
+    public void createComment(CreateCommentParam param) {
+        //MemberがGroupと関連づいていない場合、処理終了
+        if(memberGroupConnDao.isJoinMember(param.createMemberKey, param.groupKey) == false) {
+            return;
+        }
+        
+        //Messageを取得
+        MessageModel message = messageDao.get(param.messageKey);
+        if(message == null || message.getGroupKey().equals(param.groupKey) == false) {
+            //存在しない、またはグループが異なる場合、処理終了
+            return;
+        }
+        
+        //Messageに紐付く宛先を取得
+        Set<Key> targetMemberSet = createMemberSet(
+            messageAddressDao.getList4Message(param.messageKey, param.groupKey));
+        if(targetMemberSet.contains(param.createMemberKey) == false) {
+            //コメント登録者が宛先に含まれていない場合、処理終了
+            return;
+        }
+        
+        //Messageを更新
+        message.setLastUpdate(CurrentDateUtils.getInstance().getCurrentDateTime());
+        message.setComment(true);
+        messageDao.put(message);
+        
+        //登録されている未読情報を削除し、再度put(ただし、自分は除く)
+        createComment(param, targetMemberSet);
+    }
     
+    /* (非 Javadoc)
+     * @see jp.co.nemuzuka.koshiji.service.MessageEditService#deleteComment(com.google.appengine.api.datastore.Key, com.google.appengine.api.datastore.Key, com.google.appengine.api.datastore.Key)
+     */
+    @Override
+    public void deleteComment(Key messageKey, Key commentKey, Key memberKey) {
+        MessageModel message = messageDao.get(messageKey);
+        CommentModel comment = commentDao.get(commentKey);
+        if(message == null || comment == null) {
+            return;
+        }
+        if(message.getCreateMemberKey().equals(memberKey) == false &&
+                comment.getCreateMemberKey().equals(memberKey) == false) {
+            return;
+        }
+
+        //固定文言で上書き
+        String msg = System.getProperty("jp.co.nemuzuka.message.delete.comment", "deleted.");
+        comment.setBody(new Text(msg));
+        comment.setCreateMemberKey(null);
+        commentDao.put(comment);
+    }
+
+    /**
+     * Commentの作成、未読状態の設定.
+     * @param param 登録情報
+     * @param targetMemberSet 宛先MemberSet
+     */
+    private void createComment(CreateCommentParam param,
+            Set<Key> targetMemberSet) {
+        //Comment登録
+        putComment(param);
+        
+        //該当Messageの未読情報を削除
+        List<UnreadMessageModel> unreadMessageList = unreadMessageDao.getList(param.messageKey);
+        for(UnreadMessageModel target : unreadMessageList) {
+            unreadMessageDao.delete(target.getKey());
+        }
+        
+        //未読情報を追加
+        for(Key memberKey : targetMemberSet) {
+            if(memberKey.equals(param.createMemberKey)) {
+                //自分は未読として登録しない
+                continue;
+            }
+            
+            UnreadMessageModel model = new UnreadMessageModel();
+            model.setMemberKey(memberKey);
+            model.setMessageKey(param.messageKey);
+            unreadMessageDao.put(model);
+        }
+    }
+
+    /**
+     * Comment登録.
+     * @param param 登録情報
+     */
+    private void putComment(CreateCommentParam param) {
+        CommentModel model = new CommentModel();
+        model.setBody(new Text(param.body));
+        model.setCreateMemberKey(param.createMemberKey);
+        model.setLastUpdate(CurrentDateUtils.getInstance().getCurrentDateTime());
+        model.setMessageKey(param.messageKey);
+        model.setNo(messageSeqDao.createMessageSeq());
+        commentDao.put(model);
+    }
+
     /**
      * メッセージの宛先、未読情報作成.
      * @param messageKey MessageKey
@@ -147,5 +252,19 @@ public class MessageEditServiceImpl implements MessageEditService {
         //作成者も宛先に含める
         targetMemberKeySet.add(param.createMemberKey);
         return targetMemberKeySet.toArray(new Key[0]);
+    }
+
+    /**
+     * MemberSet生成.
+     * @param list MessageAddressModelのList
+     * @return MemberのSet
+     */
+    private Set<Key> createMemberSet(List<MessageAddressModel> list) {
+        
+        Set<Key> memberSet = new HashSet<Key>();
+        for(MessageAddressModel target : list) {
+            memberSet.add(target.getMemberKey());
+        }
+        return memberSet;
     }
 }

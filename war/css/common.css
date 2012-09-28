@@ -17,6 +17,7 @@ textarea.body {
 	width: 95%;
 }
 
+
 div.message_address {
 	background-color:white;
 	height: 6.5em;
@@ -41,7 +42,6 @@ div.message_address {
 
 .message_item.hover {
 	background: GhostWhite;
-	color: red;
 	border-right: 1px solid #E3E3E3;
 	border-left: 1px solid #E3E3E3;
 }
@@ -58,9 +58,17 @@ div.message_address {
 }
 
 .message_comment {
-	border: 1px solid #E3E3E3;
 	padding: 5px;
 }
+
+.massage_comment_input_area {
+	text-align: right;
+}
+
+.message_comment_list {
+	margin-top: 5px;
+}
+
 
 .message_list_footer {
 	background: white;

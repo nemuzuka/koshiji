@@ -81,4 +81,39 @@ public class MessageAddressDao extends AbsDao {
         filter.add(e.groupKey.equal(groupKey));
         return getList(filter, null, (InMemorySortCriterion[]) null);
     }
+    
+    /**
+     * MessageAddress一覧取得.
+     * Messageに紐付くMessageAddress一覧を取得します。
+     * @param messageKey 取得対象MessageKey
+     * @param groupKey 取得対象GroupKey
+     * @return 該当レコード
+     */
+    public List<MessageAddressModel> getList4Message(Key messageKey, Key groupKey) {
+        MessageAddressModelMeta e = (MessageAddressModelMeta) getModelMeta();
+        Set<FilterCriterion> filter = new HashSet<FilterCriterion>();
+        filter.add(e.messageKey.equal(messageKey));
+        filter.add(e.groupKey.equal(groupKey));
+        return getList(filter, null, (InMemorySortCriterion[]) null);
+    }
+    
+    /**
+     * MessageAddress存在チェック.
+     * 該当メッセージの宛先に指定したユーザが存在するかチェックします。
+     * @param messageKey MessageKey
+     * @param groupKey GroupKey
+     * @param memberKey MemberKey
+     * @return 存在する場合、true
+     */
+    public boolean isExistsMember(Key messageKey, Key groupKey, Key memberKey) {
+        MessageAddressModelMeta e = (MessageAddressModelMeta) getModelMeta();
+        Set<FilterCriterion> filter = new HashSet<FilterCriterion>();
+        filter.add(e.messageKey.equal(messageKey));
+        filter.add(e.groupKey.equal(groupKey));
+        filter.add(e.memberKey.equal(memberKey));
+        if(getList(filter, null, (InMemorySortCriterion[]) null).size() != 1) {
+            return false;
+        }
+        return true;
+    }
 }

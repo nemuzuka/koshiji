@@ -43,6 +43,27 @@ public interface MessageEditService {
     void createMessage(CreateParam param);
     
     /**
+     * Comment登録.
+     * Commentを登録します。
+     * 1.登録Memberが指定グループに紐付いていない場合、終了
+     * 2.指定Messageの宛先に、登録Member/指定グループに紐付いていない場合、終了
+     * 3.指定Messageのグループと指定グループが一致しない場合、終了
+     * 4.Messageの最終更新日、コメント有りに変更
+     * 5.Messageの宛先に対して、未読状態の設定(Comment登録者は除く)
+     * @param param 登録パラメータ
+     */
+    void createComment(CreateCommentParam param);
+    
+    /**
+     * Comment削除.
+     * Commentを削除します。削除処理は、コメント本文を固定値に設定することとします。
+     * @param messageKey MessageKey
+     * @param commentKey CommentKey
+     * @param memberKey MemberKey
+     */
+    void deleteComment(Key messageKey, Key commentKey, Key memberKey);
+    
+    /**
      * Messeage登録パラメータ.
      * @author kazumune
      */
@@ -55,5 +76,14 @@ public interface MessageEditService {
         public String[] memberKeyStrings;
         /** メッセージ本文. */
         public String body;
+    }
+    
+    /**
+     * Comment登録パラメータ.
+     * @author kazumune
+     */
+    class CreateCommentParam extends CreateParam {
+        /** MessageKey. */
+        public Key messageKey;
     }
 }
