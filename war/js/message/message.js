@@ -276,7 +276,7 @@ function createCommentDiv(data, messageKeyToString) {
 		$tr.append(
 			$("<td />").attr({"width":"95%"})
 				.append($("<p />").html(escapeTextArea(model.bodyText)))
-				.append($("<p>").append($("<small />").text("(" + createViewTime(lastUpdate) + " " + createMemberName + ")")))
+				.append($("<p>").append($("<small />").text("( " + createViewTime(lastUpdate) + " " + createMemberName + " )")))
 		).append(
 			$("<td />").attr({"width":"5%", "align":"right"})
 				.append($delButton)
@@ -370,6 +370,7 @@ function createComment($textArea, messageKey) {
 			//メッセージを表示して、一覧歳表示
 			infoCheck(data);
 			$textArea.val("");
+			$textArea.parent().hide("fast");
 			var $appendDiv = $textArea.parent().parent();
 			$appendDiv.children(".message_comment_list").remove();
 			createCommentListArea($appendDiv, messageKey);
