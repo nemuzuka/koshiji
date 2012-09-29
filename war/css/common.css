@@ -32,7 +32,7 @@ div.message_address {
 .message_item {
 	background: White;
 	cursor: pointer;
-	padding: 9px 12px;
+	padding: 9px 12px 0px;
 	border-bottom: 1px solid #E3E3E3;
 }
 
@@ -58,7 +58,7 @@ div.message_address {
 }
 
 .message_comment {
-	padding: 5px;
+	padding: 5px 5px 0px;
 }
 
 .massage_comment_input_area {
