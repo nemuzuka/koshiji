@@ -95,7 +95,7 @@ function renderList(data, pageNo) {
 		if(unread) {
 			$bell_icon = $("<i />").addClass("icon-bell");
 		}
-		var $createMemberSpan = $("<div />").text(createMemberName);
+		var $createMemberSpan = $("<strong />").text(createMemberName);
 		$msgHeader.append($small).append($bell_icon).append($createMemberSpan);
 		
 		//content部の生成
