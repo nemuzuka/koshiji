@@ -15,11 +15,8 @@
  */
 package jp.co.nemuzuka.koshiji.controller.message.ajax;
 
-import java.util.List;
-
 import jp.co.nemuzuka.controller.JsonController;
 import jp.co.nemuzuka.entity.JsonResult;
-import jp.co.nemuzuka.koshiji.entity.CommentModelEx;
 import jp.co.nemuzuka.koshiji.service.MessageSearchService;
 import jp.co.nemuzuka.koshiji.service.impl.MessageSearchServiceImpl;
 
@@ -44,11 +41,11 @@ public class SearchCommentController extends JsonController {
 	    Key memberKey = Datastore.stringToKey(getUserInfo().keyToString);
 	    Key messageKey = Datastore.stringToKey(asString("messageKeyString"));
 	    
-	    List<CommentModelEx> list = messageSearchService.getCommentList(messageKey, memberKey, groupKey);
+	    MessageSearchService.CommentResult result = messageSearchService.getCommentList(messageKey, memberKey, groupKey);
 	    
         JsonResult jsonResult = new JsonResult();
         jsonResult.setToken(setToken());
-        jsonResult.setResult(list);
+        jsonResult.setResult(result);
         return jsonResult;
 	}    
 }

@@ -255,9 +255,10 @@ function createCommentDiv(data, messageKeyToString) {
 	$("#token").val(data.token);
 
 	var $retDiv = $("<div />").addClass("message_comment_list");
+	var $addressDiv = $("<p />").text("宛先:" + data.result.address);
 	var $table = $("<table />").addClass("table table-hover");
 	var $tbody = $("<tbody />");
-	var result = data.result;
+	var result = data.result.list;
 	$.each(result, function(){
 		var model = this.model;
 		var createMemberName = this.createMemberName;
@@ -285,6 +286,7 @@ function createCommentDiv(data, messageKeyToString) {
 	});
 	$table.append($tbody);
 
+	$retDiv.append($addressDiv);
 	if(result.length != 0) {
 		$retDiv.append($table);
 	}

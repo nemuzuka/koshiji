@@ -54,7 +54,7 @@ public interface MessageSearchService {
      * @param groupKey GroupKey
      * @return 検索結果
      */
-    List<CommentModelEx> getCommentList(Key messageKey, Key memberKey, Key groupKey);
+    CommentResult getCommentList(Key messageKey, Key memberKey, Key groupKey);
     
     /**
      * 検索条件.
@@ -86,5 +86,16 @@ public interface MessageSearchService {
         public List<MessageModelEx> list = new ArrayList<MessageModelEx>();
         /** 次表示ページが存在するか. */
         public boolean hasNextPage;
+    }
+    
+    /**
+     * コメント検索結果.
+     * @author kazumune
+     */
+    class CommentResult {
+        /** 表示対象List. */
+        public List<CommentModelEx> list = new ArrayList<CommentModelEx>();
+        /** 宛先文字列. */
+        public String address = "";
     }
 }

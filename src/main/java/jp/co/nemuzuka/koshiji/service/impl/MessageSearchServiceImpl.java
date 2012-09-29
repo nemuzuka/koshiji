@@ -16,7 +16,6 @@
 package jp.co.nemuzuka.koshiji.service.impl;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -121,30 +120,41 @@ public class MessageSearchServiceImpl implements MessageSearchService {
      * @see jp.co.nemuzuka.koshiji.service.MessageSearchService#getCommentList(com.google.appengine.api.datastore.Key, com.google.appengine.api.datastore.Key, com.google.appengine.api.datastore.Key)
      */
     @Override
-    public List<CommentModelEx> getCommentList(Key messageKey, Key memberKey,
+    public CommentResult getCommentList(Key messageKey, Key memberKey,
             Key groupKey) {
-        List<CommentModelEx> list = new ArrayList<CommentModelEx>();
+        CommentResult result = new CommentResult();
         
         //MemberがGroupと関連づいていない場合、処理終了
         if(memberGroupConnDao.isJoinMember(memberKey, groupKey) == false) {
-            return list;
+            return result;
         }
         if(messageAddressDao.isExistsMember(messageKey, groupKey, memberKey) == false) {
-            return list;
+            return result;
         }
         MessageModel message = messageDao.get(messageKey);
         if(message == null || message.getGroupKey().equals(groupKey) == false) {
-            return list;
+            return result;
         }
         
         //Commentを取得
         List<CommentModel> commentList = commentDao.getList(messageKey);
+        
+        //Messageに紐付く全ての宛先を取得
+        List<MessageAddressModel> addressList = messageAddressDao.getList4Message(messageKey, groupKey);
+        
+        //MemberSetを作成
         Set<Key> createMemberKey = new HashSet<Key>();
+        //コメント作成者分
         for(CommentModel target : commentList) {
             if(target.getCreateMemberKey() != null) {
                 createMemberKey.add(target.getCreateMemberKey());
             }
         }
+        //Message宛先分
+        for(MessageAddressModel target : addressList) {
+            createMemberKey.add(target.getMemberKey());
+        }
+        
         //作成者名を取得する為にMemberを取得
         Map<Key, MemberModel> createMemberMap = 
                 memberDao.getMap(createMemberKey.toArray(new Key[0]));
@@ -166,11 +176,39 @@ public class MessageSearchServiceImpl implements MessageSearchService {
                     ex.setDeleteAuth(true);
                 }
             }
-            list.add(ex);
+            result.list.add(ex);
         }
-        return list;
+        
+        //宛先文字列を作成
+        result.address = createAddressStr(addressList, createMemberMap);
+        
+        return result;
     }
     
+    /**
+     * 宛先文字列作成.
+     * Member名を文字連結したものを返却します。
+     * @param addressList 宛先List
+     * @param createMemberMap Member設定Map
+     * @return 宛先文字列
+     */
+    private String createAddressStr(List<MessageAddressModel> addressList,
+            Map<Key, MemberModel> createMemberMap) {
+        StringBuilder sb = new StringBuilder();
+        for(MessageAddressModel target : addressList) {
+            MemberModel member = createMemberMap.get(target.getMemberKey());
+            if(member == null) {
+                continue;
+            }
+            
+            if(sb.length() != 0) {
+                sb.append(",");
+            }
+            sb.append(member.getName());
+        }
+        return sb.toString();
+    }
+
     /**
      * Result作成.
      * 表示対象MessageListを元にResultを生成します。
