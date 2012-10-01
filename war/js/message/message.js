@@ -95,7 +95,7 @@ function renderList(data, pageNo) {
 		if(unread) {
 			$bell_icon = $("<i />").addClass("icon-bell");
 		}
-		var $createMemberSpan = $("<strong />").text(createMemberName);
+		var $createMemberSpan = $("<div />").text(createMemberName).addClass("name");
 		$msgHeader.append($small).append($bell_icon).append($createMemberSpan);
 		
 		//content部の生成
@@ -115,14 +115,15 @@ function renderList(data, pageNo) {
 		var msgSpan = $("<small />").text("表示するメッセージはありません。");
 		var $info_icon = $("<i />").addClass("icon-info-sign");
 		$("#footer_area").addClass("no_message").append($info_icon).append(msgSpan);
+		$("#footer_area").off("click");
 	} else {
 		//次ページへのリンク表示
 		var $a = $("<a />").attr({"href":"javascript:void(0)"}).text("さらに読み込む");
-		$a.on("click", function(){
+		$("#footer_area").removeClass("no_message").append($a);
+		$("#footer_area").on("click", function(){
 			var targetPage = pageNo + 1;
 			searchMessage(targetPage);
 		});
-		$("#footer_area").removeClass("no_message").append($a);
 	}
 }
 
@@ -255,8 +256,8 @@ function createCommentDiv(data, messageKeyToString) {
 	$("#token").val(data.token);
 
 	var $retDiv = $("<div />").addClass("message_comment_list");
-	var $addressDiv = $("<address />").append($("<strong />").text("宛先:"))
-		.append($("<span />").text(data.result.address));
+	var $addressDiv = $("<address />").text("宛先: ")
+		.append($("<strong />").text(data.result.address));
 	var $table = $("<table />").addClass("table table-hover");
 	var $tbody = $("<tbody />");
 	var result = data.result.list;

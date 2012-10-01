@@ -57,6 +57,10 @@ div.message_address {
 	border-top: 1px solid #E3E3E3;
 }
 
+.message_header .name {
+	color: red;
+}
+
 .message_comment {
 	padding: 5px 5px 0px;
 }
@@ -75,10 +79,13 @@ div.message_address {
 	text-align: center;
 	border-bottom: 1px solid #E3E3E3;
 	min-height: 50px;
+	cursor: pointer;
+	vertical-align: middle;
+	line-height: 50px;
 }
 
 .message_list_footer.no_message {
-	background-color:#F9F9F9;
+	cursor: auto;
 }
 
 /** toast表示用. */
