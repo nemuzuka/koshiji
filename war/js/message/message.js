@@ -135,6 +135,7 @@ function toggleComment($msgComment, keyToString, create) {
 		//データを取得する
 		renderCommentList($msgComment, keyToString, create);
 	} else {
+		$msgComment.parent().removeClass("opened");
 		$msgComment.slideToggle('fast');
 	}
 }
@@ -187,6 +188,7 @@ function renderCommentList($msgComment, keyToString, create) {
 	//指定したメッセージに紐付くコメントを取得
 	createCommentListArea($msgComment, keyToString).pipe(
 		function(data) {
+			$msgComment.parent().addClass("opened");
 			$msgComment.slideToggle('fast');
 		}
 	);

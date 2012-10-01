@@ -41,10 +41,17 @@ div.message_address {
 }
 
 .message_item.hover {
-	background: GhostWhite;
+	background: ghostWhite;
 	border-right: 1px solid #E3E3E3;
 	border-left: 1px solid #E3E3E3;
 }
+
+.message_item.opened {
+	background: floralwhite;
+	border-right: 1px solid #E3E3E3;
+	border-left: 1px solid #E3E3E3;
+}
+
 
 .message_item .incidental {
 	position: relative;
