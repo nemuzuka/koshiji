@@ -51,4 +51,14 @@ public interface MemberGroupConnService {
      * @return 該当レコード
      */
     List<MemberGroupConnModel> getMemberList(Key groupKey);
+    
+    /**
+     * MemberGroup関連削除.
+     * 引数のMemberが、対象グループの管理者の場合、指定グループに対する全ての関連を削除します。
+     * 管理者でない場合、Memberとグループの関連を削除します。
+     * @param memberKey MemberKey
+     * @param groupKey GroupKey
+     */
+    void deleteMemberGroupConn(Key memberKey, Key groupKey);
+    
 }

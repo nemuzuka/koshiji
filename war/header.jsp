@@ -22,8 +22,18 @@
       <a class="brand" href="/">Koshiji</a>
       <div class="nav-collapse collapse">
         <ul class="nav">
-          <li class="active">
-            <a href="./index.html">Message</a>
+          <li class="active dropdown">
+          	<a id="memu1" href="#" role="button" class="dropdown-toggle" data-toggle="dropdown">
+          	Message <b class="caret"></b>
+          	</a>
+          	<ul class="dropdown-menu" role="menu" aria-labelledby="memu1">
+	            <li><a tabindex="-1" href="http://google.com">グループ管理</a></li>
+	            <li class="divider"></li>
+	            <li><a tabindex="-1" href="http://google.com">グループ削除</a></li>
+	            <li><a tabindex="-1" href="http://google.com">グループ脱退</a></li>
+	            <li class="divider"></li>
+	            <li><a tabindex="-1" href="http://google.com">新規グループ作成</a></li>
+            </ul>
           </li>
           <li class="">
             <a href="./getting-started.html">Schedule</a>

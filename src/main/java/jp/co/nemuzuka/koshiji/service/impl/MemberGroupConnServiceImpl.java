@@ -89,4 +89,33 @@ public class MemberGroupConnServiceImpl implements MemberGroupConnService {
         return memberGroupConnDao.getMemberList(groupKey);
     }
 
+    /* (非 Javadoc)
+     * @see jp.co.nemuzuka.koshiji.service.MemberGroupConnService#deleteMemberGroupConn(com.google.appengine.api.datastore.Key, com.google.appengine.api.datastore.Key)
+     */
+    @Override
+    public void deleteMemberGroupConn(Key memberKey, Key groupKey) {
+        List<MemberGroupConnModel> list = getMemberList(groupKey);
+        MemberGroupConnModel targetModel = null;
+
+        for(MemberGroupConnModel target : list) {
+            if(target.getMemberKey().equals(memberKey)) {
+                targetModel = target;
+                break;
+            }
+        }
+        if(targetModel == null) {
+            return;
+        }
+        
+        if(targetModel.isAdmin()) {
+            //指定グループに対する全ての関連を削除
+            for(MemberGroupConnModel target : list) {
+                memberGroupConnDao.delete(target.getKey());
+            }
+        } else {
+            //自分とグループの関連を削除
+            memberGroupConnDao.delete(targetModel.getKey());
+        }
+    }
+
 }

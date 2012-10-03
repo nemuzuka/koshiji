@@ -72,18 +72,17 @@ public class MemberDao extends AbsDao {
 
 	/**
 	 * List取得.
-	 * @param name 氏名(前方一致)
-	 * @param mail メール(前方一致)
+	 * メールアドレスに合致するListを取得します。
+	 * @param mail メール(完全一致)
 	 * @return 該当レコード
 	 */
-	public List<MemberModel> getList(String name, String mail) {
+	public List<MemberModel> getList(String mail) {
 		MemberModelMeta e = (MemberModelMeta) getModelMeta();
 		Set<FilterCriterion> filterSet = new HashSet<FilterCriterion>();
-		if(StringUtils.isNotEmpty(name)) {
-			filterSet.add(e.name.startsWith(name));
-		}
 		if(StringUtils.isNotEmpty(mail)) {
-			filterSet.add(e.mail.startsWith(mail));
+			filterSet.add(e.mail.equal(mail));
+		} else {
+		    return new ArrayList<MemberModel>();
 		}
 		return getList(filterSet, null, e.key.asc);
 	}

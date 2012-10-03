@@ -137,7 +137,7 @@ public class MemberServiceImplTest extends AppEngineTestCase4HRD {
 		GlobalTransaction.transaction.get().commit();
 		GlobalTransaction.transaction.get().begin();
 		
-		List<MemberModel> list = service.getList("name123", null);
+		List<MemberModel> list = service.getList("mail0123@hige.hage");
 		assertThat(list.size(), is(0));
 	}
 
@@ -157,7 +157,7 @@ public class MemberServiceImplTest extends AppEngineTestCase4HRD {
 		GlobalTransaction.transaction.get().begin();
 
 		//登録されていることの確認
-		List<MemberModel> list = service.getList("name123", null);
+		List<MemberModel> list = service.getList("mail0123@hige.hage");
 		assertThat(list.size(), is(1));
 		assertThat(list.get(0).getMail(), is("mail0123@hige.hage"));
 		assertThat(list.get(0).getName(), is("name123"));
@@ -175,7 +175,7 @@ public class MemberServiceImplTest extends AppEngineTestCase4HRD {
 		GlobalTransaction.transaction.get().commit();
 		GlobalTransaction.transaction.get().begin();
 
-		list = service.getList(null, "mail0123@hige.hage");
+		list = service.getList("mail0123@hige.hage");
 		assertThat(list.size(), is(1));
 		//メールアドレスは更新されない
 		assertThat(list.get(0).getMail(), is("mail0123@hige.hage"));

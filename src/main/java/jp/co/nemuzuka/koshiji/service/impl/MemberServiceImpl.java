@@ -148,11 +148,11 @@ public class MemberServiceImpl implements MemberService {
     }
 
     /* (非 Javadoc)
-     * @see jp.co.nemuzuka.koshiji.service.MemberService#getList(java.lang.String, java.lang.String)
+     * @see jp.co.nemuzuka.koshiji.service.MemberService#getList(java.lang.String)
      */
     @Override
-    public List<MemberModel> getList(String name, String mail) {
-        return memberDao.getList(name, mail);
+    public List<MemberModel> getList(String mail) {
+        return memberDao.getList(mail);
     }
 	
     /* (非 Javadoc)
@@ -188,7 +188,7 @@ public class MemberServiceImpl implements MemberService {
         MemberKeyEntity entity = new MemberKeyEntity();
         
         //登録されているMember情報を取得
-        List<MemberModel> list = getList("", "");
+        List<MemberModel> list = memberDao.getAllList();
         for(MemberModel target : list) {
             entity.keyMap.put(target.getMail(), target.getKey());
             entity.keyStringMap.put(target.getMail(), target.getKeyToString());

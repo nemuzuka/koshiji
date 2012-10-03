@@ -33,7 +33,8 @@ public interface MemberCreateService {
     /**
      * グループメンバー作成.
      * 指定したメールアドレスでMemberを作成し、
-     * Memberをグループのメンバーとして関連付けます
+     * Memberをグループのメンバーとして関連付けます。
+     * メールアドレスが既に登録されている場合、新しくMemberを作成することはしません。
      * @param email メールアドレス
      * @param groupKeyString グループKey文字列
      */
