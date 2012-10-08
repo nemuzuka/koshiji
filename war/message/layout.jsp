@@ -18,23 +18,23 @@
 <c:import url="/header.jsp"/>
 <!-- Contents -->
 <div class="container-fluid">
-  <div class="row-fluid">
-    <div class="span4">
-      <section>
-        <div class="well sidebar-nav">
-          ${param.subMenu}
-        </div>
-      </section>
-    </div>
-    <div class="span8">
-      <section>
-        <div class="well">
-          ${param.content}
-          <input type="hidden" id="token" />
-        </div>
-      </div>
-    </div>
-  </div>
+	<div class="row-fluid">
+		<div class="span4">
+			<section>
+				<div class="well sidebar-nav">
+					${param.subMenu}
+				</div>
+			</section>
+		</div>
+		<div class="span8">
+			<section>
+				<div class="well">
+					${param.content}
+					<input type="hidden" id="token" />
+				</div>
+			</div>
+		</div>
+	</div>
 </div>
 </body>
 </html>

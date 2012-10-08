@@ -77,10 +77,20 @@ public class UserInfoServiceImpl implements UserInfoService {
         MemberForm memberForm = memberService.get(userInfo.keyToString);
         userInfo.timeZone = TimeZone.fromCode(memberForm.timeZone);
         
-        setGroupInfo(memberKey, userInfo);
+        setGroupInfo(memberKey, userInfo, null);
         setGroupMemberInfo(userInfo);
 
         return userInfo;
+    }
+    
+    /* (非 Javadoc)
+     * @see jp.co.nemuzuka.koshiji.service.UserInfoService#changeGroup(com.google.appengine.api.datastore.Key, java.lang.String, jp.co.nemuzuka.entity.UserInfo)
+     */
+    @Override
+    public void changeGroup(Key memberKey, String groupKeyString, UserInfo targetUserInfo) {
+        targetUserInfo.clear();
+        setGroupInfo(memberKey, targetUserInfo, groupKeyString);
+        setGroupMemberInfo(targetUserInfo);
     }
     
     /**
@@ -113,10 +123,16 @@ public class UserInfoServiceImpl implements UserInfoService {
     /**
      * グループ情報設定.
      * ログインユーザに関連づいているグループ情報を設定します。
+     * 初期設定グループの設定ルールは、
+     * １．引数の初期設定グループKey文字列
+     * ２．UserInfoの初期グループ
+     * ３．グループの先頭
+     * の優先度で設定します。
      * @param memberKey 対象MemberKey
      * @param userInfo 設定対象UserInfo
+     * @param selectedGroupKeyString 初期設定グループKey文字列
      */
-    private void setGroupInfo(Key memberKey, UserInfo userInfo) {
+    private void setGroupInfo(Key memberKey, UserInfo userInfo, String selectedGroupKeyString) {
         //Memberに紐付くグループを取得
         List<MemberGroupConnModel> memberGroupConnList = 
                 memberGroupConnService.getList(memberKey);
@@ -124,20 +140,45 @@ public class UserInfoServiceImpl implements UserInfoService {
         for(MemberGroupConnModel target : memberGroupConnList) {
             grupKeySet.add(target.getGroupKey());
         }
+        
+        //初期設定グループの判断
+        String targetGroupKeyString = "";
+        if(StringUtils.isNotEmpty(selectedGroupKeyString)) {
+            targetGroupKeyString = selectedGroupKeyString;
+        } else if(StringUtils.isNotEmpty(userInfo.initGroupKeyString)) {
+            targetGroupKeyString = userInfo.initGroupKeyString;
+        }
+        
         Map<Key, GroupModel> groupMap = groupService.getMap(grupKeySet.toArray(new Key[0]));
+        String firstGroupKeyString = "";
+        boolean firstGroupAdmin = false;
         for(MemberGroupConnModel target : memberGroupConnList) {
             GroupModel groupModel = groupMap.get(target.getGroupKey());
             if(groupModel == null) {
                 continue;
             }
+            
             String groupKeyString = groupModel.getKeyToString();
             userInfo.groupList.add(
                 new LabelValueBean(groupModel.getGroupName(), groupKeyString));
-            if(StringUtils.isEmpty(userInfo.selectedGroupKeyString)) {
-                //先頭のグループを初期選択値とする
-                userInfo.selectedGroupKeyString = groupKeyString;
-                userInfo.groupManager = target.isAdmin();
+
+            if(StringUtils.isEmpty(firstGroupKeyString)) {
+                firstGroupKeyString = groupKeyString;
+                firstGroupAdmin = target.isAdmin();
             }
+            
+            if(StringUtils.isNotEmpty(targetGroupKeyString)) {
+                //初期設定グループが設定されており、指定グループであれば初期選択値とする
+                if(groupKeyString.equals(targetGroupKeyString)) {
+                    userInfo.selectedGroupKeyString = groupKeyString;
+                    userInfo.groupManager = target.isAdmin();
+                }
+            }
+        }
+        if(StringUtils.isEmpty(userInfo.selectedGroupKeyString)) {
+            //未設定の場合、先頭データを設定
+            userInfo.selectedGroupKeyString = firstGroupKeyString;
+            userInfo.groupManager = firstGroupAdmin;
         }
     }
 }

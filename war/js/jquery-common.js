@@ -17,7 +17,7 @@ function openModalDialog() {
 
 //モーダルダイアログを閉じる時に呼び出します。
 //開いているモーダルダイアログが全て閉じられた場合、スクロールバーを表示します。
-function closeModelDialog() {
+function closeModalDialog() {
 	g_openDialog_cnt--;
 	if(g_openDialog_cnt == 0) {
 		document.body.style.overflow = "visible";
@@ -395,7 +395,7 @@ function removeDummyText(id) {
  * 指定したnameのcheckboxのcheck状態になっている値を配列で取得します。
  */
 function createArray4Checkbox(name) {
-	var cb = $("input:checkbox[@name='" + name + "']");
+	var cb = $("input[name='" + name + "']");
 	var retArray = [];
 	$.each(cb, function() {
 		if ($(this).prop('checked') == true){

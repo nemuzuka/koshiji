@@ -33,6 +33,7 @@ import jp.co.nemuzuka.exception.AlreadyExistKeyException;
 import jp.co.nemuzuka.koshiji.dao.MemberDao;
 import jp.co.nemuzuka.koshiji.form.MemberForm;
 import jp.co.nemuzuka.koshiji.model.MemberModel;
+import jp.co.nemuzuka.koshiji.service.MemberGroupConnService;
 import jp.co.nemuzuka.koshiji.service.MemberService;
 import jp.co.nemuzuka.utils.ConvertUtils;
 import jp.co.nemuzuka.utils.CurrentDateUtils;
@@ -46,6 +47,7 @@ import jp.co.nemuzuka.utils.DateTimeUtils;
 public class MemberServiceImpl implements MemberService {
 
     MemberDao memberDao = MemberDao.getInstance();
+    MemberGroupConnService memberGroupConnService = MemberGroupConnServiceImpl.getInstance();
 
     /** インスタンス. */
 	private static MemberServiceImpl impl = new MemberServiceImpl();
@@ -230,7 +232,11 @@ public class MemberServiceImpl implements MemberService {
         form.name = model.getName();
         form.timeZone = model.getTimeZone();
         form.memo = model.getMemo().getValue();
+        form.defaultGroup = StringUtils.defaultString(model.getDefaultGroup(), "");
         form.versionNo = ConvertUtils.toString(model.getVersion());
+
+        //Memberに紐付くグループ一覧を取得する
+        form.groupList = memberGroupConnService.getGroupList(model.getKey());
     }
 
     /**
@@ -254,5 +260,11 @@ public class MemberServiceImpl implements MemberService {
             timeZone = jp.co.nemuzuka.common.TimeZone.GMT_P_9.getCode();
         }
         model.setTimeZone(timeZone);
+        
+        if(StringUtils.isEmpty(form.defaultGroup)) {
+            model.setDefaultGroup("");
+        } else {
+            model.setDefaultGroup(form.defaultGroup);
+        }
     }
 }

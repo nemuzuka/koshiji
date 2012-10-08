@@ -17,6 +17,7 @@ package jp.co.nemuzuka.koshiji.service;
 
 import java.util.List;
 
+import jp.co.nemuzuka.entity.LabelValueBean;
 import jp.co.nemuzuka.koshiji.model.MemberGroupConnModel;
 
 import com.google.appengine.api.datastore.Key;
@@ -43,6 +44,14 @@ public interface MemberGroupConnService {
      * @return 該当レコード
      */
     List<MemberGroupConnModel> getList(Key memberKey);
+    
+    /**
+     * 一覧取得.
+     * 指定したMemberKeyに紐付くグループの一覧を取得します。
+     * @param memberKey MemberKey
+     * @return 該当データ
+     */
+    List<LabelValueBean> getGroupList(Key memberKey);
     
     /**
      * 一覧取得.

@@ -19,6 +19,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.arnx.jsonic.JSONHint;
+
 import jp.co.nemuzuka.common.TimeZone;
 import jp.co.nemuzuka.entity.LabelValueBean;
 
@@ -48,8 +50,14 @@ public class MemberForm implements Serializable {
 	/** タイムゾーン. */
 	public String timeZone = jp.co.nemuzuka.common.TimeZone.GMT_P_9.getCode();
 	
+	/** デフォルト表示グループ. */
+	public String defaultGroup = "";
+	
 	/** バージョンNo. */
 	public String versionNo;
+	
+	//画面構成情報
+	public List<LabelValueBean> groupList;
 	
 	/**
 	 * タイムゾーンの選択値List取得.
@@ -67,6 +75,7 @@ public class MemberForm implements Serializable {
 	/**
 	 * @return keyToString
 	 */
+	@JSONHint(ignore=true)
 	public String getKeyToString() {
 		return keyToString;
 	}
@@ -146,5 +155,33 @@ public class MemberForm implements Serializable {
      */
     public void setMemo(String memo) {
         this.memo = memo;
+    }
+
+    /**
+     * @return defaultGroup
+     */
+    public String getDefaultGroup() {
+        return defaultGroup;
+    }
+
+    /**
+     * @param defaultGroup セットする defaultGroup
+     */
+    public void setDefaultGroup(String defaultGroup) {
+        this.defaultGroup = defaultGroup;
+    }
+
+    /**
+     * @return groupList
+     */
+    public List<LabelValueBean> getGroupList() {
+        return groupList;
+    }
+
+    /**
+     * @param groupList セットする groupList
+     */
+    public void setGroupList(List<LabelValueBean> groupList) {
+        this.groupList = groupList;
     }
 }

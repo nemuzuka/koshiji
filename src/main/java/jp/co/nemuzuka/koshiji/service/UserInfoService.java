@@ -15,6 +15,8 @@
  */
 package jp.co.nemuzuka.koshiji.service;
 
+import com.google.appengine.api.datastore.Key;
+
 import jp.co.nemuzuka.entity.UserInfo;
 
 /**
@@ -30,4 +32,13 @@ public interface UserInfoService {
      * @return ユーザ情報
      */
     UserInfo createUserInfo(String email);
+    
+    /**
+     * グループ情報変更
+     * 指定したグループを選択状態にしてユーザ情報を更新します。
+     * @param memberKey MemberKey
+     * @param groupKeyString GroupKey文字列
+     * @param targetUserInfo 設定対象ユーザ情報
+     */
+    void changeGroup(Key memberKey, String groupKeyString, UserInfo targetUserInfo);
 }

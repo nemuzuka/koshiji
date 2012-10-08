@@ -48,6 +48,10 @@ public class MemberModel extends AbsModel {
 	/** タイムゾーン. */
 	@Attribute(unindexed=true)
 	private String timeZone;
+
+    /** デフォルト表示グループ. */
+    @Attribute(unindexed=true)
+    private String defaultGroup;
 	
 	/**
 	 * @return key
@@ -119,5 +123,16 @@ public class MemberModel extends AbsModel {
 	public void setTimeZone(String timeZone) {
 		this.timeZone = timeZone;
 	}
-
+    /**
+     * @return defaultGroup
+     */
+    public String getDefaultGroup() {
+        return defaultGroup;
+    }
+    /**
+     * @param defaultGroup セットする defaultGroup
+     */
+    public void setDefaultGroup(String defaultGroup) {
+        this.defaultGroup = defaultGroup;
+    }
 }

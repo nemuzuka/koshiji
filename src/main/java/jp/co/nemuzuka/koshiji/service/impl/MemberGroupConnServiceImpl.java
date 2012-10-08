@@ -15,10 +15,17 @@
  */
 package jp.co.nemuzuka.koshiji.service.impl;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import jp.co.nemuzuka.common.UniqueKey;
+import jp.co.nemuzuka.entity.LabelValueBean;
+import jp.co.nemuzuka.koshiji.dao.GroupDao;
 import jp.co.nemuzuka.koshiji.dao.MemberGroupConnDao;
+import jp.co.nemuzuka.koshiji.model.GroupModel;
 import jp.co.nemuzuka.koshiji.model.MemberGroupConnModel;
 import jp.co.nemuzuka.koshiji.service.MemberGroupConnService;
 
@@ -33,6 +40,7 @@ import com.google.appengine.api.datastore.Key;
 public class MemberGroupConnServiceImpl implements MemberGroupConnService {
 
     MemberGroupConnDao memberGroupConnDao = MemberGroupConnDao.getInstance();
+    GroupDao groupDao = GroupDao.getInstance();
 
     /** インスタンス. */
 	private static MemberGroupConnServiceImpl impl = new MemberGroupConnServiceImpl();
@@ -110,12 +118,37 @@ public class MemberGroupConnServiceImpl implements MemberGroupConnService {
         if(targetModel.isAdmin()) {
             //指定グループに対する全ての関連を削除
             for(MemberGroupConnModel target : list) {
-                memberGroupConnDao.delete(target.getKey());
+                memberGroupConnDao.deleteMember(target.getKey(), target.getMemberKey(), target.getGroupKey());
             }
+            //グループも削除
+            groupDao.delete(groupKey);
         } else {
             //自分とグループの関連を削除
-            memberGroupConnDao.delete(targetModel.getKey());
+            memberGroupConnDao.deleteMember(targetModel.getKey(), memberKey, groupKey);
         }
     }
 
+    /* (非 Javadoc)
+     * @see jp.co.nemuzuka.koshiji.service.MemberGroupConnService#getGroupList(com.google.appengine.api.datastore.Key)
+     */
+    @Override
+    public List<LabelValueBean> getGroupList(Key memberKey) {
+        
+        List<MemberGroupConnModel> list = getList(memberKey);
+        Set<Key> groupKeySet = new HashSet<Key>();
+        for(MemberGroupConnModel target : list) {
+            groupKeySet.add(target.getGroupKey());
+        }
+        
+        Map<Key, GroupModel> groupMap = groupDao.getMap(groupKeySet.toArray(new Key[0]));
+        List<LabelValueBean> retList = new ArrayList<LabelValueBean>();
+        for(MemberGroupConnModel target : list) {
+            GroupModel groupModel = groupMap.get(target.getGroupKey());
+            if(groupModel == null) {
+                continue;
+            }
+            retList.add(new LabelValueBean(groupModel.getGroupName(), groupModel.getKeyToString()));
+        }
+        return retList;
+    }
 }

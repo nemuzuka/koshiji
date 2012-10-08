@@ -38,6 +38,9 @@ public class UserInfo implements Serializable {
 	/** ログインユーザのTimeZone. */
 	public TimeZone timeZone = TimeZone.GMT_P_9;
 	
+	/** 初期表示時グループのKey文字列. */
+	public String initGroupKeyString = "";
+	
 	/** 選択したグループのKey文字列. */
 	public String selectedGroupKeyString = "";
 	
@@ -49,5 +52,50 @@ public class UserInfo implements Serializable {
 	
 	/** 参加グループList. */
 	public List<LabelValueBean> groupList = new ArrayList<LabelValueBean>();
+
+	/**
+	 * 初期化.
+	 * グループ関連の情報を初期化します。
+	 */
+	public void clear() {
+        selectedGroupKeyString = "";
+        memberList.clear();
+        groupList.clear();
+        groupManager = false;
+	}
 	
+    /**
+     * @return groupManager
+     */
+    public boolean isGroupManager() {
+        return groupManager;
+    }
+
+    /**
+     * @return memberList
+     */
+    public List<LabelValueBean> getMemberList() {
+        return memberList;
+    }
+
+    /**
+     * @return groupList
+     */
+    public List<LabelValueBean> getGroupList() {
+        return groupList;
+    }
+
+    /**
+     * @return initGroupKeyString
+     */
+    public String getInitGroupKeyString() {
+        return initGroupKeyString;
+    }
+
+    /**
+     * @return selectedGroupKeyString
+     */
+    public String getSelectedGroupKeyString() {
+        return selectedGroupKeyString;
+    }
 }

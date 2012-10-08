@@ -15,47 +15,43 @@
  */
 package jp.co.nemuzuka.koshiji.controller.message.ajax;
 
+import javax.servlet.http.HttpSession;
+
 import jp.co.nemuzuka.controller.JsonController;
 import jp.co.nemuzuka.entity.JsonResult;
 import jp.co.nemuzuka.entity.UserInfo;
-import jp.co.nemuzuka.koshiji.service.MessageSearchService;
-import jp.co.nemuzuka.koshiji.service.MessageSearchService.SearchParam;
-import jp.co.nemuzuka.koshiji.service.impl.MessageSearchServiceImpl;
+import jp.co.nemuzuka.koshiji.service.UserInfoService;
+import jp.co.nemuzuka.koshiji.service.impl.UserInfoServiceImpl;
 
-import org.apache.commons.lang.StringUtils;
 import org.slim3.datastore.Datastore;
 
+import com.google.appengine.api.datastore.Key;
+
 /**
- * Messageを検索します。
+ * 表示対象のグループを変更します。
  * @author kazumune
  */
-public class SearchController extends JsonController {
-
-    private MessageSearchService messageSearchService = MessageSearchServiceImpl.getInstance();
+public class ChangeGroupController extends JsonController {
+    
+    private UserInfoService userInfoService = UserInfoServiceImpl.getInstance();
     
 	/* (非 Javadoc)
 	 * @see jp.co.nemuzuka.core.controller.JsonController#execute()
 	 */
 	@Override
 	protected Object execute() throws Exception {
-	    SearchParam param = new SearchParam();
-	    MessageSearchService.Result result = null;
+	    
+	    String groupKeyString = asString("selectedGroupKeyString");
+	    Key memberKey = Datastore.stringToKey(getUserInfo().keyToString);
 	    UserInfo userInfo = getUserInfo();
-	    if(StringUtils.isNotEmpty(userInfo.selectedGroupKeyString)) {
-	        param.groupKey = Datastore.stringToKey(userInfo.selectedGroupKeyString);
-	        String limit = System.getProperty("jp.co.nemuzuka.message.limit", "10");
-	        param.limit = Integer.valueOf(limit);
-	        param.memberKey = Datastore.stringToKey(userInfo.keyToString);
-	        param.pageNo = asInteger("pageNo");
-	        
-	        result = messageSearchService.getList(param);
-	    } else {
-	        result = new MessageSearchService.Result();
-	    }
+	    userInfoService.changeGroup(memberKey, groupKeyString, userInfo);
+        HttpSession session = request.getSession(false);
+        if(session != null) {
+            session.invalidate();
+        }
+        sessionScope(USER_INFO_KEY, userInfo);
 	    
         JsonResult jsonResult = new JsonResult();
-        jsonResult.setToken(setToken());
-        jsonResult.setResult(result);
         return jsonResult;
-	}    
+	}
 }

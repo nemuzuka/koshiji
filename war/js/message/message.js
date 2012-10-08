@@ -112,7 +112,7 @@ function renderList(data, pageNo) {
 	
 	if(data.result.hasNextPage == false) {
 		//メッセージが存在しない旨表示
-		var msgSpan = $("<small />").text("表示するメッセージはありません。");
+		var msgSpan = $("<small />").text("これ以降に表示するメッセージはありません。");
 		var $info_icon = $("<i />").addClass("icon-info-sign");
 		$("#footer_area").addClass("no_message").append($info_icon).append(msgSpan);
 		$("#footer_area").off("click");
@@ -387,11 +387,13 @@ function createComment($textArea, messageKey) {
 
 //メッセージ登録関連初期処理
 function initMessage() {
-	$("#message_create").on("click", function(){
-		createMessage();
-	});
-	setAutoResize($("#body"));
-	$("#body").trigger("change");
+	if($("#groupList").val() != null) {
+		$("#message_create").on("click", function(){
+			createMessage();
+		});
+		setAutoResize($("#body"));
+		$("#body").trigger("change");
+	}
 }
 
 //autoResize設定

@@ -20,9 +20,11 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+import jp.co.nemuzuka.common.UniqueKey;
 import jp.co.nemuzuka.koshiji.meta.MemberGroupConnModelMeta;
 import jp.co.nemuzuka.koshiji.model.MemberGroupConnModel;
 
+import org.slim3.datastore.Datastore;
 import org.slim3.datastore.FilterCriterion;
 import org.slim3.datastore.InMemorySortCriterion;
 import org.slim3.datastore.ModelMeta;
@@ -91,7 +93,7 @@ public class MemberGroupConnDao extends AbsDao {
         MemberGroupConnModelMeta e = (MemberGroupConnModelMeta) getModelMeta();
         Set<FilterCriterion> filter = new HashSet<FilterCriterion>();
         filter.add(e.groupKey.equal(groupKey));
-        return getList(filter, null, e.admin.asc, e.key.asc);
+        return getList(filter, null, e.admin.desc, e.key.asc);
     }
     
     /**
@@ -129,4 +131,18 @@ public class MemberGroupConnDao extends AbsDao {
         return true;
     }
     
+    /**
+     * 関連削除.
+     * 指定した関連を削除します。その際、一意制約データも削除します。
+     * @param key MemberGroupConnModelのKey
+     * @param memberKey MemberKey
+     * @param groupKey GroupKey
+     */
+    public void deleteMember(Key key, Key memberKey, Key groupKey) {
+        String memberKeyString = Datastore.keyToString(memberKey);
+        String groupKeyString = Datastore.keyToString(groupKey);
+        String uniqueKey = memberKeyString + ":" + groupKeyString;
+        Datastore.deleteUniqueValue(UniqueKey.memberGroupConn.name(), uniqueKey);
+        delete(key);
+    }
 }
