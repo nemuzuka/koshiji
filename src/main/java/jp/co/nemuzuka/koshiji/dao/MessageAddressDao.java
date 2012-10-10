@@ -129,4 +129,16 @@ public class MessageAddressDao extends AbsDao {
         return getList(filter, null, (InMemorySortCriterion[]) null);
     }
     
+    /**
+     * MessageAddress削除.
+     * Messageに紐付くデータを削除します。
+     * @param messageKey 削除対象MessageKey
+     * @param groupKey 削除対象GroupKey
+     */
+    public void delete4MessageKey(Key messageKey, Key groupKey) {
+        List<MessageAddressModel> list = getList(messageKey, groupKey);
+        for(MessageAddressModel target : list) {
+            delete(target.getKey());
+        }
+    }
 }

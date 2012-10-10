@@ -16,6 +16,7 @@
 package jp.co.nemuzuka.koshiji.dao;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -85,4 +86,17 @@ public class MessageDao extends AbsDao {
         return getList(filter, null, e.lastUpdate.desc, e.no.desc);
     }
     
+    /**
+     * Key一覧取得.
+     * 最終更新日付 <= 指定日付
+     * の関係を持つMessageのKeyListを取得します。
+     * @param targetDate 指定日付
+     * @return 該当レコード
+     */
+    public List<Key> getKeyList(Date targetDate) {
+        MessageModelMeta e = (MessageModelMeta) getModelMeta();
+        Set<FilterCriterion> filter = new HashSet<FilterCriterion>();
+        filter.add(e.lastUpdate.lessThanOrEqual(targetDate));
+        return getKeyList(filter);
+    }
 }

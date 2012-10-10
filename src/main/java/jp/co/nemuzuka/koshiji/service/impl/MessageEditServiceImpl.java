@@ -185,10 +185,7 @@ public class MessageEditServiceImpl implements MessageEditService {
         putComment(param);
         
         //該当Messageの未読情報を削除
-        List<UnreadMessageModel> unreadMessageList = unreadMessageDao.getList(param.messageKey);
-        for(UnreadMessageModel target : unreadMessageList) {
-            unreadMessageDao.delete(target.getKey());
-        }
+        unreadMessageDao.delete4MessageKey(param.messageKey);
         
         //未読情報を追加
         for(Key memberKey : targetMemberSet) {

@@ -451,7 +451,7 @@ function createMessage() {
 			infoCheck(data);
 			viewLoadingMsg();
 			clearMessageInput();
-			setTimeout(function(){ refreshList(); }, 1000);
+			refreshList();
 		}
 	);
 }

@@ -120,4 +120,15 @@ public class UnreadMessageDao extends AbsDao {
         return getList(filter, null, e.key.asc);
     }
     
+    /**
+     * 未読データ削除.
+     * 指定したMessageの未読データを削除します。
+     * @param messageKey MessageKey
+     */
+    public void delete4MessageKey(Key messageKey) {
+        List<UnreadMessageModel> list = getList(messageKey);
+        for(UnreadMessageModel target : list) {
+            delete(target.getKey());
+        }
+    }
 }

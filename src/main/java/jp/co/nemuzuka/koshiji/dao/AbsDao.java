@@ -175,7 +175,7 @@ public abstract class AbsDao {
         
         if(keyList) {
             return Datastore.query(getModelMeta()).filter(
-                memoryFilters.toArray(new FilterCriterion[0])).asKeyList();
+                filters.toArray(new FilterCriterion[0])).asKeyList();
         }
         
         return (List<M>) Datastore.query(getModelMeta()).filter(

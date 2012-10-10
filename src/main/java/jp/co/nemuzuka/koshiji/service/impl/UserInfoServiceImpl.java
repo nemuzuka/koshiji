@@ -76,6 +76,7 @@ public class UserInfoServiceImpl implements UserInfoService {
         userInfo.keyToString = Datastore.keyToString(memberKey);
         MemberForm memberForm = memberService.get(userInfo.keyToString);
         userInfo.timeZone = TimeZone.fromCode(memberForm.timeZone);
+        userInfo.initGroupKeyString = memberForm.defaultGroup;
         
         setGroupInfo(memberKey, userInfo, null);
         setGroupMemberInfo(userInfo);

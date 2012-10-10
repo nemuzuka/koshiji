@@ -78,5 +78,16 @@ public class CommentDao extends AbsDao {
         filter.add(e.messageKey.equal(messageKey));
         return getList(filter, null, e.lastUpdate.desc, e.no.desc);
     }
-
+    
+    /**
+     * Comment削除.
+     * MessageKeyに紐付くCommentを削除します。
+     * @param messageKey MessageKey
+     */
+    public void delete4MessageKey(Key messageKey) {
+        List<CommentModel> list = getList(messageKey);
+        for(CommentModel target : list) {
+            delete(target.getKey());
+        }
+    }
 }

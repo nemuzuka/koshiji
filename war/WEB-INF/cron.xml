@@ -5,4 +5,10 @@
     <description>Clean up sessions</description>
     <schedule>every 12 hours</schedule>
   </cron>
+  <cron>
+    <url>/admin/deletemessagetask</url>
+    <description>delete older messages</description>
+    <schedule>every 24 hours</schedule>
+    <target>deletemessage</target> 
+  </cron>
 </cronentries>
