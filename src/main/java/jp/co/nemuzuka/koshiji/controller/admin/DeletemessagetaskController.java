@@ -21,7 +21,7 @@ public class DeletemessagetaskController extends Controller {
     @Override
     protected Navigation run() throws Exception {
         Queue queue = QueueFactory.getDefaultQueue();
-        queue.add(Builder.withUrl("/admin/loads").method(Method.GET).header("Host", 
+        queue.add(Builder.withUrl("/admin/deletemessagetask").method(Method.GET).header("Host", 
             BackendServiceFactory.getBackendService().getBackendAddress("deleteMessage")));
         response.setContentType("text/plain");
         response.getWriter().println("called");
