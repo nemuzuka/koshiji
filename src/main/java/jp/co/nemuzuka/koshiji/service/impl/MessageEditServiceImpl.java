@@ -84,7 +84,7 @@ public class MessageEditServiceImpl implements MessageEditService {
         Key messageKey = putMessage(param);
         
         //宛先・未読の作成
-        createUnreadMessageAddress(messageKey, memberKeys, param.groupKey);
+        createUnreadMessageAddress(messageKey, memberKeys, param.createMemberKey, param.groupKey);
     }
 
     /* (非 Javadoc)
@@ -219,16 +219,24 @@ public class MessageEditServiceImpl implements MessageEditService {
      * メッセージの宛先、未読情報作成.
      * @param messageKey MessageKey
      * @param memberKeys 宛先MemberKey配列
+     * @param createMemberKey 登録MemberKey
      * @param groupKey GroupKey
      */
-    private void createUnreadMessageAddress(Key messageKey, Key[] memberKeys, Key groupKey) {
+    private void createUnreadMessageAddress(Key messageKey, Key[] memberKeys, 
+            Key createMemberKey, Key groupKey) {
         for(Key memberKey : memberKeys) {
+            
             MessageAddressModel model = new MessageAddressModel();
             model.setGroupKey(groupKey);
             model.setMemberKey(memberKey);
             model.setMessageKey(messageKey);
             messageAddressDao.put(model);
-            
+
+            if(memberKey.equals(createMemberKey)) {
+                //Messageの作成者の場合、未読情報には登録しない
+                continue;
+            }
+
             UnreadMessageModel unreadMessage = new UnreadMessageModel();
             unreadMessage.setMemberKey(memberKey);
             unreadMessage.setMessageKey(messageKey);
