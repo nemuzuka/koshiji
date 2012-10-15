@@ -113,10 +113,63 @@ public class UserInfoServiceImplTest extends AppEngineTestCase4HRD {
 
     /**
      * createUserInfoのテスト.
-     * プロジェクトの変更
+     * 削除されたグループが存在する
      */
     @Test
     public void testCreateUserInfo3() {
+        createInitData();
+        //グループ0を削除
+        groupDao.delete(groupKeyList.get(0));
+        GlobalTransaction.transaction.get().commit();
+        GlobalTransaction.transaction.get().begin();
+        
+        UserInfo actual = service.createUserInfo("hoge0@gmail.com");
+        //グループ0が初期選択だが、存在しないので、グループ1が初期選択になる
+        assertThat(actual.selectedGroupKeyString, is(Datastore.keyToString(groupKeyList.get(1))));
+        
+        //指定グループに紐付くMember
+        List<LabelValueBean> actualMemberList = actual.memberList;
+        assertThat(actualMemberList.size(), is(3));
+        assertThat(actualMemberList.get(0).getValue(), is(Datastore.keyToString(memberKeyList.get(2))));
+        assertThat(actualMemberList.get(1).getValue(), is(Datastore.keyToString(memberKeyList.get(0))));
+        assertThat(actualMemberList.get(2).getValue(), is(Datastore.keyToString(memberKeyList.get(3))));
+        
+        //メンバー0が参照できるグループ一覧
+        //グループ0が削除されているので、0件
+        List<LabelValueBean> actualGroupList = actual.groupList;
+        assertThat(actualGroupList.size(), is(1));
+        assertThat(actualGroupList.get(0).getValue(), is(Datastore.keyToString(groupKeyList.get(1))));
+    }
+
+    /**
+     * createUserInfoのテスト.
+     * 表示対象のグループが存在しない
+     */
+    @Test
+    public void testCreateUserInfo4() {
+        createInitData();
+        
+        UserInfo actual = service.createUserInfo("hoge4@gmail.com");
+        assertThat(actual.keyToString, is(Datastore.keyToString(memberKeyList.get(4))));
+        assertThat(actual.initGroupKeyString, is(""));
+        assertThat(actual.selectedGroupKeyString, is(""));
+        assertThat(actual.groupManager, is(false));
+        
+        //指定グループに紐付くMember
+        List<LabelValueBean> actualMemberList = actual.memberList;
+        assertThat(actualMemberList.size(), is(0));
+        
+        //メンバー0が参照できるグループ一覧
+        List<LabelValueBean> actualGroupList = actual.groupList;
+        assertThat(actualGroupList.size(), is(0));
+    }
+
+    
+    /**
+     * changeGroupのテスト.
+     */
+    @Test
+    public void testChangeGroup() {
         createInitData();
         
         UserInfo actual = service.createUserInfo("hoge0@gmail.com");
@@ -137,10 +190,9 @@ public class UserInfoServiceImplTest extends AppEngineTestCase4HRD {
         assertThat(actualGroupList.get(1).getValue(), is(Datastore.keyToString(groupKeyList.get(1))));
     }
     
-    
 	/**
 	 * 事前データ作成.
-	 * ユーザを4人作成します。
+	 * ユーザを5人作成します。
 	 * グループを2つ作成します。
 	 * ユーザとグループの関連を付与します。
      * グループ0/メンバー0(管理者)
@@ -149,6 +201,7 @@ public class UserInfoServiceImplTest extends AppEngineTestCase4HRD {
      * グループ1/メンバー0
      * グループ1/メンバー2(管理者)
      * グループ1/メンバー3(デフォルト表示)
+     * ※メンバー4はどのグループにも所属しません
 	 */
 	private void createInitData() {
 
@@ -165,7 +218,7 @@ public class UserInfoServiceImplTest extends AppEngineTestCase4HRD {
         }
 	    
 	    memberKeyList = new ArrayList<Key>();
-		for(int i = 0; i < 4; i++) {
+		for(int i = 0; i < 5; i++) {
 			MemberModel model = new MemberModel();
 			model.setMail("hoge" + i + "@gmail.com");
 			model.setName("name" + i);

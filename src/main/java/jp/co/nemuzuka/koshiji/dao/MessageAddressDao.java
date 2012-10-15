@@ -136,7 +136,7 @@ public class MessageAddressDao extends AbsDao {
      * @param groupKey 削除対象GroupKey
      */
     public void delete4MessageKey(Key messageKey, Key groupKey) {
-        List<MessageAddressModel> list = getList(messageKey, groupKey);
+        List<MessageAddressModel> list = getList4Message(messageKey, groupKey);
         for(MessageAddressModel target : list) {
             delete(target.getKey());
         }

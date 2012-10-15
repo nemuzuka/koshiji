@@ -27,24 +27,19 @@ import java.util.List;
 import jp.co.nemuzuka.common.TimeZone;
 import jp.co.nemuzuka.entity.GlobalTransaction;
 import jp.co.nemuzuka.entity.TransactionEntity;
+import jp.co.nemuzuka.koshiji.dao.CommentDao;
 import jp.co.nemuzuka.koshiji.dao.GroupDao;
 import jp.co.nemuzuka.koshiji.dao.MemberDao;
 import jp.co.nemuzuka.koshiji.dao.MemberGroupConnDao;
 import jp.co.nemuzuka.koshiji.dao.MessageAddressDao;
 import jp.co.nemuzuka.koshiji.dao.MessageDao;
 import jp.co.nemuzuka.koshiji.dao.UnreadMessageDao;
-import jp.co.nemuzuka.koshiji.entity.CommentModelEx;
-import jp.co.nemuzuka.koshiji.entity.MessageModelEx;
 import jp.co.nemuzuka.koshiji.model.GroupModel;
 import jp.co.nemuzuka.koshiji.model.MemberGroupConnModel;
 import jp.co.nemuzuka.koshiji.model.MemberModel;
 import jp.co.nemuzuka.koshiji.model.MessageAddressModel;
 import jp.co.nemuzuka.koshiji.model.MessageModel;
 import jp.co.nemuzuka.koshiji.model.UnreadMessageModel;
-import jp.co.nemuzuka.koshiji.service.MessageEditService;
-import jp.co.nemuzuka.koshiji.service.MessageSearchService.CommentResult;
-import jp.co.nemuzuka.koshiji.service.MessageSearchService.Result;
-import jp.co.nemuzuka.koshiji.service.MessageSearchService.SearchParam;
 import jp.co.nemuzuka.tester.AppEngineTestCase4HRD;
 import jp.co.nemuzuka.utils.DateTimeUtils;
 
@@ -54,211 +49,67 @@ import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.Text;
 
 /**
- * MessageSearchServiceImplのテストクラス.
+ * MessageDeleteServiceImplのテストクラス.
  * @author kazumune
  */
-public class MessageSearchServiceImplTest extends AppEngineTestCase4HRD {
+public class MessageDeleteServiceImplTest extends AppEngineTestCase4HRD {
 
-    MessageSearchServiceImpl service = MessageSearchServiceImpl.getInstance();
+    MessageDeleteServiceImpl service = MessageDeleteServiceImpl.getInstance();
     MessageDao messageDao = MessageDao.getInstance();
     MessageAddressDao messageAddressDao = MessageAddressDao.getInstance();
     MemberGroupConnDao memberGroupConnDao = MemberGroupConnDao.getInstance();
     UnreadMessageDao unreadMessageDao = UnreadMessageDao.getInstance();
     MemberDao memberDao = MemberDao.getInstance();
 	GroupDao groupDao = GroupDao.getInstance();
+	CommentDao commentDao = CommentDao.getInstance();
     
 	List<Key> memberKeyList;
 	List<Key> groupKeyList;
 	List<Key> messageKeyList;
 	
     /**
-     * getListのテスト.
+     * getDeleteTargetのテスト.
      */
     @Test
-    public void testGetList() {
+    public void testGetDeleteTarget() {
         createInitData();
         
-        //メンバー0に対して未読メッセージの設定がされていること
-        assertThat(
-            unreadMessageDao.getList(memberKeyList.get(0), 
-                messageKeyList.get(0), messageKeyList.get(1), messageKeyList.get(2)).size(),
-            is(3));
+        SimpleDateFormat sdf = DateTimeUtils.createSdf("yyyyMMdd");
+        Date date = null;
+        try {
+            date = sdf.parse("20120101");
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
+        List<Key> actual = service.getDeleteTarget(date);
+        assertThat(actual.size(), is(0));
         
-        //グループ0/メンバー0の検索
-        SearchParam param = new SearchParam();
-        param.groupKey = groupKeyList.get(0);
-        param.memberKey = memberKeyList.get(0);
-        param.limit = 3;
-        param.pageNo = 1;
-        
-        Result actual = service.getList(param);
-        GlobalTransaction.transaction.get().commit();
-        GlobalTransaction.transaction.get().begin();
-        
-        assertThat(actual.hasNextPage, is(false));
-        List<MessageModelEx> actualList = actual.list;
-        assertThat(actualList.size(), is(2));
-        
-        MessageModelEx actualMessage = actualList.get(0);
-        assertThat(actualMessage.getModel().getKey(), is(messageKeyList.get(1)));
-        assertThat(actualMessage.getCreateMemberName(), is("name0"));
-        assertThat(actualMessage.getLastUpdate(), is("20120101 1234"));
-        assertThat(actualMessage.isUnread(), is(true));
-
-        actualMessage = actualList.get(1);
-        assertThat(actualMessage.getModel().getKey(), is(messageKeyList.get(0)));
-        assertThat(actualMessage.getCreateMemberName(), is("name0"));
-        assertThat(actualMessage.getLastUpdate(), is("20120101 0123"));
-        assertThat(actualMessage.isUnread(), is(true));
-        
-        //グループ0/メンバー0のメッセージに対する未読が削除されていること
-        assertThat(
-            unreadMessageDao.getList(memberKeyList.get(0), messageKeyList.get(0), messageKeyList.get(1)).size(),
-            is(0));
-        //指定したグループ以外(グループ1)での未読メッセージは削除されていないこと
-        assertThat(
-            unreadMessageDao.getList(memberKeyList.get(0), messageKeyList.get(2)).size(),
-            is(1));
-    }
-
-    /**
-     * getListのテスト.
-     */
-    @Test
-    public void testGetList2() {
-        createInitData();
-        
-        assertThat(
-            unreadMessageDao.getList(memberKeyList.get(1), messageKeyList.get(0), messageKeyList.get(1)).size(),
-            is(1));
-        
-        //グループ0/メンバー1の検索
-        SearchParam param = new SearchParam();
-        param.groupKey = groupKeyList.get(0);
-        param.memberKey = memberKeyList.get(1);
-        param.limit = 2;
-        param.pageNo = 1;
-        
-        Result actual = service.getList(param);
-        GlobalTransaction.transaction.get().commit();
-        GlobalTransaction.transaction.get().begin();
-        
-        assertThat(actual.hasNextPage, is(false));
-        List<MessageModelEx> actualList = actual.list;
-        assertThat(actualList.size(), is(2));
-        
-        MessageModelEx actualMessage = actualList.get(0);
-        assertThat(actualMessage.getModel().getKey(), is(messageKeyList.get(1)));
-        assertThat(actualMessage.getCreateMemberName(), is("name0"));
-        assertThat(actualMessage.getLastUpdate(), is("20120101 1234"));
-        assertThat(actualMessage.isUnread(), is(false));
-
-        actualMessage = actualList.get(1);
-        assertThat(actualMessage.getModel().getKey(), is(messageKeyList.get(0)));
-        assertThat(actualMessage.getCreateMemberName(), is("name0"));
-        assertThat(actualMessage.getLastUpdate(), is("20120101 0123"));
-        assertThat(actualMessage.isUnread(), is(true));
-        
-        //メンバー1の未読が削除されていること
-        assertThat(
-            unreadMessageDao.getList(memberKeyList.get(1), messageKeyList.get(0), messageKeyList.get(1)).size(),
-            is(0));
-    }
-
-    /**
-     * getListのテスト.
-     * 表示対象のListに含まれないMessageの未読は削除されないこと
-     */
-    @Test
-    public void testGetList3() {
-        createInitData();
-        
-        //メンバー0に対して未読メッセージの設定がされていること
-        assertThat(
-            unreadMessageDao.getList(memberKeyList.get(0), 
-                messageKeyList.get(0), messageKeyList.get(1), messageKeyList.get(2)).size(),
-            is(3));
-        
-        //グループ0/メンバー0の検索
-        SearchParam param = new SearchParam();
-        param.groupKey = groupKeyList.get(0);
-        param.memberKey = memberKeyList.get(0);
-        param.limit = 1;
-        param.pageNo = 1;
-        
-        Result actual = service.getList(param);
-        GlobalTransaction.transaction.get().commit();
-        GlobalTransaction.transaction.get().begin();
-        
-        assertThat(actual.hasNextPage, is(true));
-        List<MessageModelEx> actualList = actual.list;
-        assertThat(actualList.size(), is(1));
-        assertThat(actualList.get(0).getModel().getKey(), is(messageKeyList.get(1)));
-        
-        //グループ0/メンバー0の表示対象メッセージに対する未読が削除されていること
-        assertThat(
-            unreadMessageDao.getList(memberKeyList.get(0), messageKeyList.get(1)).size(),
-            is(0));
-        //表示対象でない or 指定したグループ以外(グループ1)での未読メッセージは削除されていないこと
-        assertThat(
-            unreadMessageDao.getList(memberKeyList.get(0), 
-                messageKeyList.get(0), messageKeyList.get(2)).size(),
-            is(2));
-    }
-
-    /**
-     * getListのテスト.
-     * 指定したメンバーがグループと紐付いていない場合
-     */
-    @Test
-    public void testGetList4() {
-        createInitData();
-        
-        //グループ1/メンバー1の検索(紐付いていない)
-        SearchParam param = new SearchParam();
-        param.groupKey = groupKeyList.get(1);
-        param.memberKey = memberKeyList.get(1);
-        param.limit = 1;
-        param.pageNo = 1;
-        
-        Result actual = service.getList(param);
-        GlobalTransaction.transaction.get().commit();
-        GlobalTransaction.transaction.get().begin();
-        
-        assertThat(actual.hasNextPage, is(false));
-        List<MessageModelEx> actualList = actual.list;
-        assertThat(actualList.size(), is(0));
+        try {
+            date = sdf.parse("20121231");
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
+        actual = service.getDeleteTarget(date);
+        assertThat(actual.size(), is(3));
     }
     
     /**
-     * getCommentListのテスト.
+     * deleteのテスト.
      */
     @Test
-    public void testGetCommentList() {
+    public void testDelete() {
         createInitData();
-
-        //コメントの登録
-        MessageEditService messageEditService = MessageEditServiceImpl.getInstance();
-        MessageEditService.CreateCommentParam commentParam = new MessageEditService.CreateCommentParam();
-        commentParam.body = "コメントですよん";
-        commentParam.createMemberKey = memberKeyList.get(0);
-        commentParam.groupKey = groupKeyList.get(0);
-        commentParam.messageKey = messageKeyList.get(0);
-        messageEditService.createComment(commentParam);
+        service.delete(messageKeyList.get(0));
+        service.delete(messageKeyList.get(1));
+        service.delete(messageKeyList.get(2));
         GlobalTransaction.transaction.get().commit();
         GlobalTransaction.transaction.get().begin();
         
-        //Messageに紐付くコメントの取得
-        CommentResult actual = service.getCommentList(messageKeyList.get(0), memberKeyList.get(0),
-            groupKeyList.get(0));
-        assertThat(actual.address, is("name0,name1"));
-        List<CommentModelEx> actualList = actual.list;
-        assertThat(actualList.size(), is(1));
-        CommentModelEx actualComment = actualList.get(0);
-        assertThat(actualComment.getCreateMemberName(), is("name0"));
-        assertThat(actualComment.getModel().getBody().getValue(), is("コメントですよん"));
+        assertThat(messageDao.getAllList().size(), is(0));
+        assertThat(commentDao.getAllList().size(), is(0));
+        assertThat(messageAddressDao.getAllList().size(), is(0));
+        assertThat(unreadMessageDao.getAllList().size(), is(0));
         
-
     }
     
     

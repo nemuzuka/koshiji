@@ -404,6 +404,158 @@ public class MessageEditServiceImplTest extends AppEngineTestCase4HRD {
         assertThat(actualComments.size(), is(0));
     }
     
+    /**
+     * deleteAddressのテスト.
+     * グループ0/メンバー1が全員に当てたメッセージをメンバー1が削除
+     */
+    @Test
+    public void testDeleteAddress() {
+        createInitData();
+        
+        CreateParam param = new CreateParam();
+        param.body = "ほえほえほえ";
+        param.createMemberKey = memberKeyList.get(1);
+        param.groupKey = groupKeyList.get(0);
+        param.memberKeyStrings = new String[]{MessageEditService.TARGET_ALL};
+        
+        service.createMessage(param);
+        GlobalTransaction.transaction.get().commit();
+        GlobalTransaction.transaction.get().begin();
+        List<MessageModel> messages = messageDao.getAllList();
+        Key massageKey = messages.get(0).getKey();
+        
+        //Messageを削除
+        service.deleteAddress(massageKey, memberKeyList.get(1), groupKeyList.get(0));
+        GlobalTransaction.transaction.get().commit();
+        GlobalTransaction.transaction.get().begin();
+        
+        //宛先の確認
+        List<MessageAddressModel> actualMessageAddresses = messageAddressDao.getAllList();
+        assertThat(actualMessageAddresses.size(), is(0));
+    }
+
+    /**
+     * deleteAddressのテスト.
+     * グループ0/メンバー1が全員に当てたメッセージをメンバー0が削除
+     */
+    @Test
+    public void testDeleteAddress2() {
+        createInitData();
+        
+        CreateParam param = new CreateParam();
+        param.body = "ほえほえほえ";
+        param.createMemberKey = memberKeyList.get(1);
+        param.groupKey = groupKeyList.get(0);
+        param.memberKeyStrings = new String[]{MessageEditService.TARGET_ALL};
+        
+        service.createMessage(param);
+        GlobalTransaction.transaction.get().commit();
+        GlobalTransaction.transaction.get().begin();
+        List<MessageModel> messages = messageDao.getAllList();
+        Key massageKey = messages.get(0).getKey();
+        
+        //Messageを削除
+        service.deleteAddress(massageKey, memberKeyList.get(0), groupKeyList.get(0));
+        GlobalTransaction.transaction.get().commit();
+        GlobalTransaction.transaction.get().begin();
+        
+        //宛先の確認
+        List<MessageAddressModel> actualMessageAddresses = messageAddressDao.getAllList();
+        assertThat(actualMessageAddresses.size(), is(1));
+        MessageAddressModel actualMessageAddress = actualMessageAddresses.get(0);
+        assertThat(actualMessageAddress.getGroupKey(), is(groupKeyList.get(0)));
+        assertThat(actualMessageAddress.getMemberKey(), is(memberKeyList.get(1)));
+    }
+
+    /**
+     * deleteCommentのテスト.
+     * グループ0/メンバー1が全員に当てたメッセージに対してメンバー0がコメント登録し、メンバー0が削除処理
+     */
+    @Test
+    public void testDeleteComment() {
+        Key[] keys = cretaeDeleteCommentInitData();
+        
+        //コメントの削除
+        service.deleteComment(keys[0], keys[1], memberKeyList.get(0));
+        GlobalTransaction.transaction.get().commit();
+        GlobalTransaction.transaction.get().begin();
+        //本文が固定文言で上書きされていることの確認
+        List<CommentModel> actualComments = commentDao.getAllList();
+        assertThat(actualComments.size(), is(1));
+        CommentModel actualComment = actualComments.get(0);
+        assertThat(actualComment.getBody().getValue(), is("deleted."));
+    }
+    
+    /**
+     * deleteCommentのテスト.
+     * グループ0/メンバー1が全員に当てたメッセージに対してメンバー0がコメント登録し、メンバー2が削除処理
+     */
+    @Test
+    public void testDeleteComment2() {
+        Key[] keys = cretaeDeleteCommentInitData();
+        
+        //コメントの削除
+        service.deleteComment(keys[0], keys[1], memberKeyList.get(2));
+        GlobalTransaction.transaction.get().commit();
+        GlobalTransaction.transaction.get().begin();
+        //本文が固定文言で上書きされていないことの確認
+        List<CommentModel> actualComments = commentDao.getAllList();
+        assertThat(actualComments.size(), is(1));
+        CommentModel actualComment = actualComments.get(0);
+        assertThat(actualComment.getBody().getValue(), is("コメントですよん"));
+    }
+
+    /**
+     * deleteCommentのテスト.
+     * グループ0/メンバー1が全員に当てたメッセージに対してメンバー0がコメント登録し、メンバー1が削除処理
+     */
+    @Test
+    public void testDeleteComment3() {
+        Key[] keys = cretaeDeleteCommentInitData();
+        
+        //コメントの削除
+        service.deleteComment(keys[0], keys[1], memberKeyList.get(1));
+        GlobalTransaction.transaction.get().commit();
+        GlobalTransaction.transaction.get().begin();
+        //本文が固定文言で上書きされていないことの確認
+        List<CommentModel> actualComments = commentDao.getAllList();
+        assertThat(actualComments.size(), is(1));
+        CommentModel actualComment = actualComments.get(0);
+        assertThat(actualComment.getBody().getValue(), is("deleted."));
+    }
+    
+    /**
+     * deleteComment用テストデータ作成.
+     * グループ0/メンバー1が全員に当てたメッセージに対してメンバー0がコメント登録した状態にします。
+     * @return index 0: MessageKey, index 1:CommentKey
+     */
+    private Key[] cretaeDeleteCommentInitData() {
+        createInitData();
+        
+        //Messageの登録
+        CreateParam param = new CreateParam();
+        param.body = "ほえほえほえ";
+        param.createMemberKey = memberKeyList.get(1);
+        param.groupKey = groupKeyList.get(0);
+        param.memberKeyStrings = new String[]{MessageEditService.TARGET_ALL};
+        service.createMessage(param);
+        GlobalTransaction.transaction.get().commit();
+        GlobalTransaction.transaction.get().begin();
+        
+        //コメントの登録
+        List<MessageModel> actualMessages = messageDao.getAllList();
+        MessageEditService.CreateCommentParam commentParam = new MessageEditService.CreateCommentParam();
+        commentParam.body = "コメントですよん";
+        commentParam.createMemberKey = memberKeyList.get(0);
+        commentParam.groupKey = groupKeyList.get(0);
+        commentParam.messageKey = actualMessages.get(0).getKey();
+        service.createComment(commentParam);
+        GlobalTransaction.transaction.get().commit();
+        GlobalTransaction.transaction.get().begin();
+        List<CommentModel> actualComments = commentDao.getAllList();
+        Key commentKey = actualComments.get(0).getKey();
+        return new Key[]{actualMessages.get(0).getKey(), commentKey};
+    }
     
 	/**
 	 * 事前データ作成.

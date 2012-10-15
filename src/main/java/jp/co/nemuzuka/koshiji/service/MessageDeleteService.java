@@ -22,6 +22,7 @@ import com.google.appengine.api.datastore.Key;
 
 /**
  * Message削除に関するService
+ * 本Serviceはbackends経由で呼び出されることを想定しています。
  * @author kazumune
  */
 public interface MessageDeleteService {
