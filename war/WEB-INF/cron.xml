@@ -6,9 +6,9 @@
     <schedule>every 12 hours</schedule>
   </cron>
   <cron>
-    <url>/admin/deletemessagetask</url>
+    <url>/admin/kickbackends</url>
     <description>delete older messages</description>
-    <schedule>every day 00:00</schedule>
+    <schedule>every day 03:30</schedule>
     <timezone>Asia/Tokyo</timezone>
     <target>deletemessage</target> 
   </cron>

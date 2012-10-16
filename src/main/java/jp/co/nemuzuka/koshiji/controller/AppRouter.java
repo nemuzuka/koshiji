@@ -11,6 +11,6 @@ public class AppRouter extends RouterImpl {
      * デフォルトコンストラクタ.
      */
     public AppRouter() {
-        addRouting("/_ah/start", "/admin/deleteMessage");
+        addRouting("/_ah/start", "/admin/startBackends");
     }
 }

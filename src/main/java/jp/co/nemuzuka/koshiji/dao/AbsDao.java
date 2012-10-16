@@ -179,8 +179,8 @@ public abstract class AbsDao {
         }
         
         return (List<M>) Datastore.query(getModelMeta()).filter(
-            memoryFilters.toArray(new FilterCriterion[0])).filterInMemory(
-                filters.toArray(new InMemoryFilterCriterion[0])).sortInMemory(sort).asList();
+            filters.toArray(new FilterCriterion[0])).filterInMemory(
+                memoryFilters.toArray(new InMemoryFilterCriterion[0])).sortInMemory(sort).asList();
     }
     
 }
