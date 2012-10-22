@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.TimeZone;
 
 import jp.co.nemuzuka.entity.UserTimeZone;
@@ -99,8 +100,7 @@ public class DateTimeUtils {
 	public static List<Date> getStartEndDate4SunDay(String targetYyyyMM) {
 		List<Date> list = getStartEndDate(targetYyyyMM);
 		Date startDate = list.get(0);
-		Calendar calendar = Calendar.getInstance();
-		calendar.setTimeZone(getTimeZone());
+		Calendar calendar = getCalender();
 
 		//月初の設定
 		while(true) {
@@ -452,6 +452,91 @@ public class DateTimeUtils {
 	public static Date addMinutes(Date date, int amount) {
 		return add(date, Calendar.MINUTE, amount);
 	}
+
+    /**
+     * Calendar取得.
+     * TimeZoneを意識します。
+     * @return Calendar
+     */
+    public static Calendar getCalender() {
+        TimeZone timeZone = getTimeZone();
+        return Calendar.getInstance(timeZone);
+    }
+    
+    /**
+     * 対象日における、曜日名を取得します。
+     * @param targetDate 取得対象日
+     * @param cal Calendarインスタンス
+     * @return 曜日名
+     */
+    public static String getDayOfTheWeekName(Date targetDate, Calendar cal) {
+
+        cal.setTime(targetDate);
+        int dayOfWeek = cal.get(Calendar.DAY_OF_WEEK);
+        String retStr = "";
+        switch(dayOfWeek) {
+            case Calendar.SUNDAY:
+                retStr = SUNDAY;
+                break;
+            case Calendar.MONDAY:
+                retStr = MONDAY;
+                break;
+            case Calendar.TUESDAY:
+                retStr = TUESDAY;
+                break;
+            case Calendar.WEDNESDAY:
+                retStr = WEDNESDAY;
+                break;
+            case Calendar.THURSDAY:
+                retStr = THURSDAY;
+                break;
+            case Calendar.FRIDAY:
+                retStr = FRIDAY;
+                break;
+            case Calendar.SATURDAY:
+                retStr = SATURDAY;
+                break;
+        }
+
+        return retStr;
+    }
+    /**
+     * 対象日における、曜日名(日本語)を取得します。
+     * @param targetDate 取得対象日
+     * @param cal Calendarインスタンス
+     * @return 曜日名(日本語)
+     */
+    public static String getDayOfTheWeekName4JP(Date targetDate, Calendar cal) {
+
+        cal.setTime(targetDate);
+        int dayOfWeek = cal.get(Calendar.DAY_OF_WEEK);
+        String retStr = "";
+        switch(dayOfWeek) {
+            case Calendar.SUNDAY:
+                retStr = "日";
+                break;
+            case Calendar.MONDAY:
+                retStr = "月";
+                break;
+            case Calendar.TUESDAY:
+                retStr = "火";
+                break;
+            case Calendar.WEDNESDAY:
+                retStr = "水";
+                break;
+            case Calendar.THURSDAY:
+                retStr = "木";
+                break;
+            case Calendar.FRIDAY:
+                retStr = "金";
+                break;
+            case Calendar.SATURDAY:
+                retStr = "土";
+                break;
+        }
+
+        return retStr;
+    }
 	
 	/**
 	 * 日付加算.
@@ -466,7 +551,7 @@ public class DateTimeUtils {
         if (date == null) {
             throw new IllegalArgumentException("The date must not be null");
         }
-        Calendar c = Calendar.getInstance(getTimeZone());
+        Calendar c = getCalender();
         c.setTime(date);
         c.add(calendarField, amount);
         return c.getTime();
@@ -483,4 +568,5 @@ public class DateTimeUtils {
 		}
 		return TimeZone.getTimeZone(timeZone);
 	}
+
 }
