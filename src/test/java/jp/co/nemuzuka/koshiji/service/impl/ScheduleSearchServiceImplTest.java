@@ -443,8 +443,19 @@ public class ScheduleSearchServiceImplTest extends AppEngineTestCase4HRD {
         List<ViewDate4Month> actualViewDate = actual.getViewDate();
         assertThat(actualViewDate.size(), is(35));
         assertThat(actualViewDate.get(0).getTargetDate(), is("20120527"));
+        assertThat(actualViewDate.get(0).isTargetMonth(), is(false));
         assertThat(actualViewDate.get(34).getTargetDate(), is("20120630"));
+        assertThat(actualViewDate.get(34).isTargetMonth(), is(true));
         
+        List<MemberSchedule> actualViewSchedule = actual.getViewSchedule();
+        assertThat(actualViewSchedule.size(), is(1));
+        
+        List<DaySchedule> actualDaySchedules = actualViewSchedule.get(0).getDaySchedules();
+        assertThat(actualDaySchedules.size(), is(35));
+        DaySchedule actualDaySchedule = actualDaySchedules.get(7);
+        assertThat(actualDaySchedule.getNoTimeList().size(), is(1));
+        assertThat(actualDaySchedule.getNoTimeList().get(0).getViewData(), is("・スケジュール:16(非公開)"));
+        assertThat(actualDaySchedule.getTimeList().size(), is(0));
     }
     
 	/**
