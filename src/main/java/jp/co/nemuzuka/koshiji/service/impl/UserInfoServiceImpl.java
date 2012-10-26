@@ -31,7 +31,6 @@ import jp.co.nemuzuka.entity.UserInfo;
 import jp.co.nemuzuka.koshiji.form.MemberForm;
 import jp.co.nemuzuka.koshiji.model.GroupModel;
 import jp.co.nemuzuka.koshiji.model.MemberGroupConnModel;
-import jp.co.nemuzuka.koshiji.model.MemberModel;
 import jp.co.nemuzuka.koshiji.service.GroupService;
 import jp.co.nemuzuka.koshiji.service.MemberGroupConnService;
 import jp.co.nemuzuka.koshiji.service.MemberService;
@@ -105,20 +104,7 @@ public class UserInfoServiceImpl implements UserInfoService {
         }
         
         Key groupKey = Datastore.stringToKey(userInfo.selectedGroupKeyString);
-        List<MemberGroupConnModel> list = memberGroupConnService.getMemberList(groupKey);
-        Set<Key> memberKeySet = new HashSet<Key>();
-        for(MemberGroupConnModel target: list) {
-            memberKeySet.add(target.getMemberKey());
-        }
-        Map<Key, MemberModel> memberMap = memberService.getMap(memberKeySet.toArray(new Key[0]));
-        for(MemberGroupConnModel target: list) {
-            MemberModel member = memberMap.get(target.getMemberKey());
-            if(member == null) {
-                continue;
-            }
-            userInfo.memberList.add(
-                new LabelValueBean(member.getName(), member.getKeyToString()));
-        }
+        userInfo.memberList = memberGroupConnService.getMemberLabelValueList(groupKey);
     }
     
     /**

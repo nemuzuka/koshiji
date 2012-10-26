@@ -24,6 +24,12 @@ $(function(){
 	$("#menu_groupAdd").on("click", function(){
 		$("#groupNameDialog").modal('show');
 	});
+	
+	//Menu TOP
+	$("#menu_schedule").on("click", function(){
+		moveUrl('/schedule');
+	});
+	
 	$("#menu_personalSettings").on("click", function(){
 		showPersonalSettings();
 	});

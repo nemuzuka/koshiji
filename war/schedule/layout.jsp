@@ -16,17 +16,11 @@
 <body data-spy="scroll" data-target=".bs-docs-sidebar">
 
 <c:import url="/header.jsp"/>
+<c:import url="/schedule/dialog.jsp"/>
 <!-- Contents -->
 <div class="container-fluid">
 	<div class="row-fluid">
-		<div class="span4">
-			<section>
-				<div class="well sidebar-nav">
-					${param.subMenu}
-				</div>
-			</section>
-		</div>
-		<div class="span8">
+		<div class="span">
 			<section>
 				<div class="well">
 					${param.content}

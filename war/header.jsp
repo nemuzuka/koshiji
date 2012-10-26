@@ -59,6 +59,11 @@
 							<li id="menu_groupAdd"><a tabindex="-1" href="javascript:void(0)">新規グループ作成</a></li>
 						</ul>
 					</li>
+					
+					<li class="" id="menu_schedule">
+						<a href="javascript:void(0)">Schedule</a>
+					</li>
+					
 					<li class="" id="menu_personalSettings">
 						<a href="javascript:void(0)">Settings</a>
 					</li>
@@ -72,7 +77,7 @@
 	</div>
 </div>
 
-<%-- Modelダイアログ --%>
+<%-- Modalダイアログ --%>
 <div class="modal hide fade" id="groupNameDialog">
 	<div class="modal-header">
 		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
@@ -193,3 +198,6 @@ isGroupManager = ${f:h(userInfo.groupManager)};
 //-->
 </script>
 <script type="text/javascript" src="/js/header.js"></script>
+
+<span id="dummy_ruler" style="visibility:hidden;position:absolute;white-space:nowrap;"></span>
+<input type="hidden" id="token" />

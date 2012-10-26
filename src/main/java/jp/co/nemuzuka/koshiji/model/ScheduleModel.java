@@ -71,7 +71,7 @@ public class ScheduleModel extends AbsModel {
     @Attribute(unindexed=true)
     private Key createMemberKey;
 
-    /** 最終更新日. */
+    /** 作成日. */
     @Attribute(unindexed=true)
     private Date createDateTime;
 
@@ -90,6 +90,17 @@ public class ScheduleModel extends AbsModel {
     }
 
     /**
+     * Memo文字列取得.
+     * @return Memo文字列
+     */
+    public String getMemoStr() {
+        if(memo == null) {
+            return "";
+        }
+        return memo.getValue();
+    }
+    
+    /**
      * @return title
      */
     public String getTitle() {
@@ -106,6 +117,7 @@ public class ScheduleModel extends AbsModel {
     /**
      * @return memo
      */
+    @JSONHint(ignore=true)
     public Text getMemo() {
         return memo;
     }

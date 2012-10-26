@@ -460,7 +460,7 @@ function createMessage() {
 function clearMessageInput() {
 	$("#body").val("");
 	$("#body").trigger("change");
-	var cb = $("input:checkbox[@name='send_target']");
+	var cb = $("input[type='checkbox'][name='send_target']");
 	$.each(cb, function() {
 		$(this).prop('checked', false);
 		if($(this).val() == 'all') {

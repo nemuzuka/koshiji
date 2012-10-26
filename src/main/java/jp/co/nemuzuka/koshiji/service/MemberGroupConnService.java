@@ -55,6 +55,14 @@ public interface MemberGroupConnService {
     
     /**
      * 一覧取得.
+     * 指定したGroupKeyに紐付くメンバーの一覧を取得します。
+     * @param groupKey GroupKey
+     * @return 該当データ
+     */
+    List<LabelValueBean> getMemberLabelValueList(Key groupKey);
+    
+    /**
+     * 一覧取得.
      * 指定したグループに紐付く一覧を取得します。
      * @param Key groupKey
      * @return 該当レコード

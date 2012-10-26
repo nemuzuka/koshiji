@@ -15,6 +15,14 @@ function openModalDialog() {
 	g_openDialog_cnt++;
 }
 
+//モーダルダイアログを中央に表示する設定
+function centerModalDialog(thisObj) {
+	var $modal = $(thisObj);
+	$modal.css('margin-top', ($modal.outerHeight() / 2) * -1)
+		.css('margin-left', ($modal.outerWidth() / 2) * -1);
+	return thisObj;
+}
+
 //モーダルダイアログを閉じる時に呼び出します。
 //開いているモーダルダイアログが全て閉じられた場合、スクロールバーを表示します。
 function closeModalDialog() {
@@ -46,6 +54,32 @@ function setAjaxDefault() {
 		}
 	});
 }
+
+//Token再設定
+//idが'token'であるhiddenオブジェクトに対して、
+//新たにサーバ側で設定したtokenを設定します。
+function reSetToken() {
+	return executeReSetToken("/ajax/token");
+}
+
+//Token設定メイン
+function executeReSetToken(url) {
+	setAjaxDefault();
+	return $.ajax({
+		type: "POST",
+		url: url}).then(
+			function(data){
+
+				//共通エラーチェック
+				if(errorCheck(data) == false) {
+					return;
+				}
+	
+				$("#token").val(data.token);
+			}
+		);
+}
+
 
 //読み込み中のメッセージを表示
 function viewLoadingMsg() {

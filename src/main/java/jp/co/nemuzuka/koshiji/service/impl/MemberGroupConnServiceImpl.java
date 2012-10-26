@@ -24,9 +24,11 @@ import java.util.Set;
 import jp.co.nemuzuka.common.UniqueKey;
 import jp.co.nemuzuka.entity.LabelValueBean;
 import jp.co.nemuzuka.koshiji.dao.GroupDao;
+import jp.co.nemuzuka.koshiji.dao.MemberDao;
 import jp.co.nemuzuka.koshiji.dao.MemberGroupConnDao;
 import jp.co.nemuzuka.koshiji.model.GroupModel;
 import jp.co.nemuzuka.koshiji.model.MemberGroupConnModel;
+import jp.co.nemuzuka.koshiji.model.MemberModel;
 import jp.co.nemuzuka.koshiji.service.MemberGroupConnService;
 
 import org.slim3.datastore.Datastore;
@@ -41,6 +43,7 @@ public class MemberGroupConnServiceImpl implements MemberGroupConnService {
 
     MemberGroupConnDao memberGroupConnDao = MemberGroupConnDao.getInstance();
     GroupDao groupDao = GroupDao.getInstance();
+    MemberDao memberDao = MemberDao.getInstance();
 
     /** インスタンス. */
 	private static MemberGroupConnServiceImpl impl = new MemberGroupConnServiceImpl();
@@ -148,6 +151,30 @@ public class MemberGroupConnServiceImpl implements MemberGroupConnService {
                 continue;
             }
             retList.add(new LabelValueBean(groupModel.getGroupName(), groupModel.getKeyToString()));
+        }
+        return retList;
+    }
+
+    /* (非 Javadoc)
+     * @see jp.co.nemuzuka.koshiji.service.MemberGroupConnService#getMemberLabelValueList(com.google.appengine.api.datastore.Key)
+     */
+    @Override
+    public List<LabelValueBean> getMemberLabelValueList(Key groupKey) {
+        
+        List<LabelValueBean> retList = new ArrayList<LabelValueBean>();
+        
+        List<MemberGroupConnModel> list = memberGroupConnDao.getMemberList(groupKey);
+        Set<Key> memberKeySet = new HashSet<Key>();
+        for(MemberGroupConnModel target: list) {
+            memberKeySet.add(target.getMemberKey());
+        }
+        Map<Key, MemberModel> memberMap = memberDao.getMap(memberKeySet.toArray(new Key[0]));
+        for(MemberGroupConnModel target: list) {
+            MemberModel member = memberMap.get(target.getMemberKey());
+            if(member == null) {
+                continue;
+            }
+            retList.add(new LabelValueBean(member.getName(), member.getKeyToString()));
         }
         return retList;
     }

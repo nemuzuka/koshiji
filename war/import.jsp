@@ -20,6 +20,8 @@
 <link href="/css/bootstrap.min.css" rel="stylesheet">
 <link href="/css/bootstrap-responsive.min.css" rel="stylesheet">
 <link href="/css/common.css" rel="stylesheet">
+<link href="/css/jquery-ui-1.9.0.custom.min.css" rel="stylesheet">
+<link href="/css/jquery-ui-timepicker.css" rel="stylesheet">
 
 <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
 <!--[if lt IE 9]>
@@ -28,7 +30,7 @@
 
 <link href="/css/docs.css" rel="stylesheet">
 
-<script type="text/javascript" src="/js/jquery-1.7.2.min.js"></script>
+<script type="text/javascript" src="/js/jquery-1.8.2.min.js"></script>
 <script type="text/javascript" src="/js/bootstrap.min.js"></script>
 <script type="text/javascript" src="/js/jquery-common.js"></script>
 <script type="text/javascript" src="/js/date.js"></script>
@@ -39,5 +41,10 @@
 <script type="text/javascript" src="/js/jquery.blockUI.js"></script>
 <script type="text/javascript" src="/js/autoresize.jquery.min.js"></script>
 <script type="text/javascript" src="/js/validate-utils.js"></script>
+<script type="text/javascript" src="/js/jquery-ui-1.9.0.custom.min.js"></script>
+<script type="text/javascript" src="/js/jquery.ui.timepicker.js"></script>
+
+<script type="text/javascript" src="/js/i18n/jquery.ui.timepicker-ja.js"></script>
+<script type="text/javascript" src="/js/i18n/ui.datepicker-ja.js"></script>
 
 </head>

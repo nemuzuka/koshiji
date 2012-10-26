@@ -40,7 +40,7 @@ import org.slim3.datastore.Datastore;
 import com.google.appengine.api.datastore.Key;
 
 /**
- * MessageSearchServiceの実装クラス.
+ * ScheduleSearchServiceの実装クラス.
  * @author kazumune
  */
 public class ScheduleSearchServiceImpl implements ScheduleSearchService {
