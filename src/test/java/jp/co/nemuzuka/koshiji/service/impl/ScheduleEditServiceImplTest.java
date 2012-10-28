@@ -319,6 +319,54 @@ public class ScheduleEditServiceImplTest extends AppEngineTestCase4HRD {
     }
     
     /**
+     * deleteのテスト.
+     */
+    @Test
+    public void testDelete() {
+        createInitData();
+        Key scheduleKey = createInitSchedule();
+        
+        Key loginMemberKey = Datastore.createKey(MemberModel.class, 1);
+        service.delete(scheduleKey, 1L, loginMemberKey);
+        GlobalTransaction.transaction.get().commit();
+        GlobalTransaction.transaction.get().begin();
+        
+        assertThat(scheduleDao.get(scheduleKey), is(nullValue()));
+    }
+    
+    /**
+     * deleteのテスト.
+     * Schedule作成者≠ログインMember
+     */
+    @Test
+    public void testDelete2() {
+        createInitData();
+        Key scheduleKey = createInitSchedule();
+        
+        Key loginMemberKey = Datastore.createKey(MemberModel.class, 2);
+        try {
+            service.delete(scheduleKey, 1L, loginMemberKey);
+            fail();
+        } catch(ConcurrentModificationException e) {}
+    }
+    
+    /**
+     * deleteのテスト.
+     * バージョン違い
+     */
+    @Test
+    public void testDelete3() {
+        createInitData();
+        Key scheduleKey = createInitSchedule();
+        
+        Key loginMemberKey = Datastore.createKey(MemberModel.class, 1);
+        try {
+            service.delete(scheduleKey, -1L, loginMemberKey);
+            fail();
+        } catch(ConcurrentModificationException e) {}
+    }
+    
+    /**
      * 更新元Schedule作成.
      * @return 更新元データKey
      */

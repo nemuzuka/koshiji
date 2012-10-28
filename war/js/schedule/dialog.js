@@ -58,7 +58,7 @@ function renderAndOpenScheduleDetailDialog(data) {
 		
 		var $deleteButton = $("<a />").text("削除する").attr({"href":"javascript:void(0);"}).addClass("btn btn-danger");
 		$deleteButton.on("click", function(){
-			alert("削除しちゃうぞ");
+			deleteSchedule();
 		});
 		$("#scheduleDetailDialog_modal-footer").append($deleteButton);
 	}
@@ -72,6 +72,39 @@ function renderAndOpenScheduleDetailDialog(data) {
 	$("#scheduleDetailDialog_modal-body").scrollTop(0);
 }
 
+//スケジュール削除
+function deleteSchedule() {
+	if(window.confirm("本スケジュールを削除します。本当によろしいですか？") == false) {
+		return;
+	}
+
+	var params = {};
+	params["scheduleKeyString"] = $("#scheduleDetailDialog_scheduleKeyString").val();
+	params["version"] = $("#scheduleDetailDialog_versonNo").val();
+	params["jp.co.nemuzuka.token"] = $("#token").val();
+
+	setAjaxDefault();
+	var task;
+	task = $.ajax({
+		type: "POST",
+		url: "/schedule/ajax/delete",
+		data: params
+	}).pipe(
+		function(data) {
+
+			//共通エラーチェック
+			if(errorCheck(data) == false) {
+				return;
+			}
+			
+			//メッセージを表示して、自身をクローズし、
+			//呼び出し元を再表示
+			infoCheck(data);
+			$('#scheduleDetailDialog').modal('hide');
+			refresh();
+		}
+	);
+}
 
 //スケジュール登録・更新ダイアログ表示
 function openScheduleEditDialog(scheduleKey, targetMemberKey, targetDate) {

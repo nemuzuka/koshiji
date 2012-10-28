@@ -105,6 +105,20 @@ public class ScheduleEditServiceImpl implements ScheduleEditService {
         
         return createForm(schedule, userInfo);
     }
+
+    /* (非 Javadoc)
+     * @see jp.co.nemuzuka.koshiji.service.ScheduleEditService#delete(com.google.appengine.api.datastore.Key, java.lang.Long, com.google.appengine.api.datastore.Key)
+     */
+    @Override
+    public void delete(Key scheduleKey, Long version,
+            Key loginMemberKey) {
+        ScheduleModel schedule = scheduleDao.get(scheduleKey, version);
+        if(schedule == null || 
+                schedule.getCreateMemberKey().equals(loginMemberKey) == false) {
+            throw new ConcurrentModificationException();
+        }
+        scheduleDao.delete(schedule.getKey());
+    }
     
     /**
      * Form情報作成.
@@ -215,5 +229,4 @@ public class ScheduleEditServiceImpl implements ScheduleEditService {
         
         return model;
     }
-
 }

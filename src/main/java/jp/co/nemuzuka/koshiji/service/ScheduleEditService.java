@@ -51,4 +51,13 @@ public interface ScheduleEditService {
     ScheduleForm getForm(String scheduleKeyString, String memberKeyString, 
             String targetDate, UserInfo userInfo);
     
+    /**
+     * スケジュール削除.
+     * 引数の情報を元に、スケジュールを削除します。
+     * ログインユーザがスケジュールの作成者でない場合、削除処理は行いません。
+     * @param scheduleKey スケジュールKey
+     * @param version versionNo
+     * @param loginMemberKey ログインユーザのMemberKey
+     */
+    void delete(Key scheduleKey, Long version, Key loginMemberKey);
 }
