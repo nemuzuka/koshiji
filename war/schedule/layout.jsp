@@ -24,6 +24,7 @@
 			<section>
 				<div class="well">
 					${param.content}
+					<input type="hidden" id="scheduleViewType" />
 				</div>
 			</div>
 		</div>

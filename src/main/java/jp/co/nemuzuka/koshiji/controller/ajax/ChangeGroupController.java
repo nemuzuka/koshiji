@@ -13,7 +13,7 @@
  * either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package jp.co.nemuzuka.koshiji.controller.message.ajax;
+package jp.co.nemuzuka.koshiji.controller.ajax;
 
 import javax.servlet.http.HttpSession;
 

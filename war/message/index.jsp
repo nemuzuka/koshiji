@@ -27,25 +27,11 @@
 		<button id="message_create" class="btn btn-primary">メッセージを送る</button>
 	</div>
 
-
-	<script type="text/javascript">
-	<!--
-	$(function(){
-		var selectedGroup = "${f:h(userInfo.selectedGroupKeyString)}";
-		$("#groupList").val(selectedGroup);
-		$("#groupList").on("change", function(){
-			changeGroup($(this).val());
-		});
-	});
-	
-	//-->
-	</script>
-
-
 </c:param>
 
 <c:param name="content">
 
+<script type="text/javascript" src="/js/message/header.js"></script>
 <script type="text/javascript" src="/js/message/message.js"></script>
 
 <div class="widget">
@@ -57,7 +43,7 @@
 </form>
 </div>
 
-<input type="hidden" id="selected_menu" value="menu1" />
+<input type="hidden" id="selected_menu" value="message" />
 
 </c:param>
 

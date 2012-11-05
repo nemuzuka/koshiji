@@ -24,6 +24,18 @@ select.required-input{background-color: #FFFCEE;}
 /* 重要メッセージ */
 .important-msg{color: red;}
 
+.view_title{
+	font-size: 20px;
+	line-height: 30px;
+	vertical-align: middle;
+	padding: 4px 1px;
+}
+
+.back_title{
+	line-height: 30px;
+	vertical-align: bottom;
+}
+
 div.message_address {
 	background-color:white;
 	height: 6.5em;

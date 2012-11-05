@@ -1,21 +1,38 @@
 $(function(){
+	renderWeekSchedule();
+});
+
+//週次スケジュール初期描画
+function renderWeekSchedule() {
+	$("#scheduleViewType").val("week");
 	renderWeekMenu();
 	refresh();
-});
+}
 
 //週次スケジュール描画
 //この関数名は共通処理より呼ばれるので重要です。
 function callAjaxAndRenderSchedule(params) {
 
+	var url = "";
+	if($("#scheduleViewType").val() == "week") {
+		url = "/schedule/ajax/week";
+	} else {
+		url = "/schedule/ajax/month";
+	}
+	
 	//サーバに問い合わせ
 	setAjaxDefault();
 	$.ajax({
 		type: "GET",
 		data: params,
-		url: "/schedule/ajax/week"
+		url: url
 	}).then(
 		function(data){
-			successRender(data);
+			if($("#scheduleViewType").val() == "week") {
+				successRender(data);
+			} else {
+				successRenderMonth(data);
+			}
 		}
 	);
 }
@@ -62,6 +79,8 @@ function renderSchedule(result) {
 
 	var $table = $("#schedule_area");
 	$table.empty();
+	$table.removeClass("schedule_table week_schedule_table");
+	$table.addClass("schedule_table");
 
 	//表示期間の設定
 	$("#viewDateRange").text(result.viewDateRange);
@@ -116,7 +135,7 @@ function renderSchedule(result) {
 		var $img = $("<img />").attr({src:"/img/calendar.png"}).css('cursor','pointer');
 		$img.attr({"alt":"月の予定を表示します","title":"月の予定を表示します"});
 		$img.on("click", function(){
-			moveMonthMember(targetMemberKey);
+			renderMonthScheduleInit(targetMemberKey);
 		});
 		$td.append($img);
 		$tr.append($td);
@@ -175,17 +194,10 @@ function renderWeekMenu() {
 		.append(" ")
 		.append($prev_day)
 		.append(" ")
-		.append($("<span>").attr({"id":"viewDateRange"}))
+		.append($("<span>").attr({"id":"viewDateRange"}).addClass("view_title"))
 		.append(" ")
 		.append($next_day)
 		.append(" ")
 		.append($next_week);
-}
-
-//指定リソースに対する月次スケジュール表示
-function moveMonthMember(memberKey) {
-	//選択リソースに対して月次予定を表示
-	viewLoadingMsg();
-	alert("月次スケジュール表示！！");
 }
 

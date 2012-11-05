@@ -15,17 +15,19 @@
 
 <c:param name="content">
 
+<script type="text/javascript" src="/js/schedule/header.js"></script>
 <script type="text/javascript" src="/js/schedule/common.js"></script>
 <script type="text/javascript" src="/js/schedule/week.js"></script>
+<script type="text/javascript" src="/js/schedule/month.js"></script>
 
 <div class="widget">
 <form class="form-horizontal">
 	<div class="widget-header">
-		<h2 class="title" id="schedule_title">週次スケジュール</h2>
+		<h3 class="title" id="schedule_title">週次スケジュール</h3>
 	</div>
 	<div class="widget-content">
 	
-	<div class="schedule_daycrl" id="schedule_daycrl">
+	<div class="schedule_daycrl" id="schedule_daycrl" width="100%">
 	</div>
 	
 	<table class="schedule_table" id="schedule_area">
@@ -33,7 +35,7 @@
 </form>
 </div>
 
-<input type="hidden" id="selected_menu" value="menu2" />
+<input type="hidden" id="selected_menu" value="schedule" />
 
 </c:param>
 

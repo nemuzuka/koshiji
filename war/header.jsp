@@ -34,8 +34,8 @@
 						</div>
 					</li>					
 
-					<li class="active dropdown">
-						<a id="memu1" href="#" role="button" class="dropdown-toggle" data-toggle="dropdown">
+					<li class="dropdown" id="menu_message">
+						<a id="memu1" href="#" role="button" class="dropdown-toggle">
 						Message <b class="caret"></b>
 						</a>
 						<ul class="dropdown-menu" role="menu" aria-labelledby="memu1">
@@ -195,6 +195,7 @@
 <script type="text/javascript">
 <!--
 isGroupManager = ${f:h(userInfo.groupManager)};
+selectedGroup = "${f:h(userInfo.selectedGroupKeyString)}";
 //-->
 </script>
 <script type="text/javascript" src="/js/header.js"></script>
