@@ -21,7 +21,7 @@
 <link href="/css/bootstrap-responsive.min.css" rel="stylesheet">
 <link href="/css/docs.css" rel="stylesheet">
 
-<script type="text/javascript" src="/js/jquery-1.7.2.min.js"></script>
+<script type="text/javascript" src="/js/jquery-1.8.2.min.js"></script>
 <script type="text/javascript" src="/js/bootstrap.min.js"></script>
 <script type="text/javascript" src="/js/jquery-common.js"></script>
 <script type="text/javascript" src="/js/date.js"></script>
