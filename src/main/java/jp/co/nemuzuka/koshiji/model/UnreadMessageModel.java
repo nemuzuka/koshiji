@@ -15,9 +15,12 @@
  */
 package jp.co.nemuzuka.koshiji.model;
 
+import java.util.Date;
+
 import net.arnx.jsonic.JSONHint;
 
 import org.slim3.datastore.Attribute;
+import org.slim3.datastore.CreationDate;
 import org.slim3.datastore.Model;
 
 import com.google.appengine.api.datastore.Key;
@@ -40,6 +43,13 @@ public class UnreadMessageModel extends AbsModel {
     
     /** MemberKey. */
     private Key memberKey;
+    
+    /** GroupKey. */
+    private Key groupKey;
+    
+    /** 登録日時(ソート用). */
+    @Attribute(listener = CreationDate.class)
+    private Date createAt;
     
     /**
      * @return key
@@ -82,5 +92,33 @@ public class UnreadMessageModel extends AbsModel {
      */
     public void setKey(Key key) {
         this.key = key;
+    }
+
+    /**
+     * @return createAt
+     */
+    public Date getCreateAt() {
+        return createAt;
+    }
+
+    /**
+     * @param createAt セットする createAt
+     */
+    public void setCreateAt(Date createAt) {
+        this.createAt = createAt;
+    }
+
+    /**
+     * @return groupKey
+     */
+    public Key getGroupKey() {
+        return groupKey;
+    }
+
+    /**
+     * @param groupKey セットする groupKey
+     */
+    public void setGroupKey(Key groupKey) {
+        this.groupKey = groupKey;
     }
 }

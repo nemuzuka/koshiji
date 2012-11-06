@@ -106,12 +106,16 @@ public class MessageEditServiceImplTest extends AppEngineTestCase4HRD {
         assertThat(actualMessageAddress.getMessageKey(), is(actualMessage.getKey()));        
         
         //未読の確認
-        //作成者は未読Messageとして登録しない
         List<UnreadMessageModel> actualUnreadMessagees = unreadMessageDao.getAllList();
-        assertThat(actualUnreadMessagees.size(), is(1));
+        assertThat(actualUnreadMessagees.size(), is(2));
         UnreadMessageModel actualUnreadMessage = actualUnreadMessagees.get(0);
         assertThat(actualUnreadMessage.getMemberKey(), is(memberKeyList.get(0)));
         assertThat(actualUnreadMessage.getMessageKey(), is(actualMessage.getKey()));
+        assertThat(actualUnreadMessage.getGroupKey(), is(groupKeyList.get(0)));
+        actualUnreadMessage = actualUnreadMessagees.get(1);
+        assertThat(actualUnreadMessage.getMemberKey(), is(memberKeyList.get(1)));
+        assertThat(actualUnreadMessage.getMessageKey(), is(actualMessage.getKey()));        
+        assertThat(actualUnreadMessage.getGroupKey(), is(groupKeyList.get(0)));
 	}
 
     /**
@@ -155,10 +159,11 @@ public class MessageEditServiceImplTest extends AppEngineTestCase4HRD {
         
         //未読の確認
         List<UnreadMessageModel> actualUnreadMessagees = unreadMessageDao.getAllList();
-        assertThat(actualUnreadMessagees.size(), is(1));
+        assertThat(actualUnreadMessagees.size(), is(2));
         UnreadMessageModel actualUnreadMessage = actualUnreadMessagees.get(0);
         assertThat(actualUnreadMessage.getMemberKey(), is(memberKeyList.get(2)));
-        assertThat(actualUnreadMessage.getMessageKey(), is(actualMessage.getKey()));
+        actualUnreadMessage = actualUnreadMessagees.get(1);
+        assertThat(actualUnreadMessage.getMemberKey(), is(memberKeyList.get(0)));
     }
 
     /**
@@ -195,10 +200,11 @@ public class MessageEditServiceImplTest extends AppEngineTestCase4HRD {
         
         //未読の確認
         List<UnreadMessageModel> actualUnreadMessagees = unreadMessageDao.getAllList();
-        assertThat(actualUnreadMessagees.size(), is(1));
+        assertThat(actualUnreadMessagees.size(), is(2));
         UnreadMessageModel actualUnreadMessage = actualUnreadMessagees.get(0);
         assertThat(actualUnreadMessage.getMemberKey(), is(memberKeyList.get(2)));
-    }
+        actualUnreadMessage = actualUnreadMessagees.get(1);
+        assertThat(actualUnreadMessage.getMemberKey(), is(memberKeyList.get(0)));    }
 
     /**
      * createMessageのテスト.
