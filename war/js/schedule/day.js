@@ -112,16 +112,16 @@ function renderDayMenu() {
 	var $schedule_daycrl = $("<div>").addClass("schedule_daycrl").attr({"id":"schedule_daycrl"});
 	
 	//スケジュール表示切替ボタンを押下された場合の処理
-	var $today = $("<i />").addClass("icon-refresh").css('cursor','pointer');
+	var $today = $("<i />").addClass("icon-share-alt").css('cursor','pointer');
 	var $todaySpan = $("<span />").css('cursor','pointer').append($today).append("今日");
 	$todaySpan.on("click", function(){
 		renderTodaySchedule();
 	});
-	var $prev_day = $("<i />").addClass("icon-arrow-left").css('cursor','pointer');
+	var $prev_day = $("<i />").addClass("icon-chevron-left").css('cursor','pointer');
 	$prev_day.on("click", function(){
 		renderTargetSchedule("prev","day");
 	});
-	var $next_day = $("<i />").addClass("icon-arrow-right").css('cursor','pointer');
+	var $next_day = $("<i />").addClass("icon-chevron-right").css('cursor','pointer');
 	$next_day.on("click", function(){
 		renderTargetSchedule("next","day");
 	});
