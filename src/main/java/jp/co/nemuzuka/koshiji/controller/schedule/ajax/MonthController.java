@@ -15,32 +15,24 @@
  */
 package jp.co.nemuzuka.koshiji.controller.schedule.ajax;
 
-import jp.co.nemuzuka.controller.JsonController;
 import jp.co.nemuzuka.entity.JsonResult;
 import jp.co.nemuzuka.entity.UserInfo;
 import jp.co.nemuzuka.koshiji.entity.ScheduleEntity;
 import jp.co.nemuzuka.koshiji.service.ScheduleSearchService;
-import jp.co.nemuzuka.koshiji.service.impl.ScheduleSearchServiceImpl;
 import jp.co.nemuzuka.utils.DateTimeUtils;
 
 /**
  * 月次グループスケジュール表示用Controller
  * @author kazumune
  */
-public class MonthController extends JsonController {
+public class MonthController extends BaseController {
 
-    //リクエストパラメータ名.
-    /** 移動方向. */
-    private static final String VIEW_TYPE = "viewType";
-    
-    private ScheduleSearchService scheduleSearchService = ScheduleSearchServiceImpl.getInstance();
-    
     /* (非 Javadoc)
      * @see jp.co.nemuzuka.controller.JsonController#execute()
      */
     @Override
     protected Object execute() throws Exception {
-        ScheduleEntity entity = sessionScope(ScheduleEntity.KEY_NAME);        
+        ScheduleEntity entity = getScheduleEntity();
         entity.baseYyyyMm = calcBaseYearMonth(entity.baseYyyyMm);
         sessionScope(ScheduleEntity.KEY_NAME, entity);
         

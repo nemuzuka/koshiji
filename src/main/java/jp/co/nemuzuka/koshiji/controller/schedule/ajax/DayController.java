@@ -16,8 +16,11 @@
 package jp.co.nemuzuka.koshiji.controller.schedule.ajax;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import org.apache.commons.lang.StringUtils;
 
 import jp.co.nemuzuka.entity.JsonResult;
 import jp.co.nemuzuka.entity.UserInfo;
@@ -27,13 +30,11 @@ import jp.co.nemuzuka.utils.ConvertUtils;
 import jp.co.nemuzuka.utils.CurrentDateUtils;
 import jp.co.nemuzuka.utils.DateTimeUtils;
 
-import org.apache.commons.lang.StringUtils;
-
 /**
- * 週次グループスケジュール表示用Controller
+ * 日次グループスケジュール表示用Controller
  * @author kazumune
  */
-public class WeekController extends BaseController {
+public class DayController extends BaseController {
 
     /* (非 Javadoc)
      * @see jp.co.nemuzuka.controller.JsonController#execute()
@@ -41,7 +42,6 @@ public class WeekController extends BaseController {
     @Override
     protected Object execute() throws Exception {
         ScheduleEntity entity = getScheduleEntity();
-        UserInfo userInfo = getUserInfo();
         
         String targetDate = asString(APPOINTMENT_DATE);
         if(StringUtils.isNotEmpty(targetDate)) {
@@ -49,15 +49,19 @@ public class WeekController extends BaseController {
             SimpleDateFormat sdf = DateTimeUtils.createSdf("yyyyMMdd");
             entity.baseDate = ConvertUtils.toDate(targetDate, sdf);
         } else {
-            //移動方向、移動日数を加味して基準日を算出
+            //基準日を算出
             entity.baseDate = calcBaseDate(entity.baseDate);
         }
         sessionScope(ScheduleEntity.KEY_NAME, entity);
         
-        //基準日から1週間分のスケジュールを取得
+        UserInfo userInfo = getUserInfo();
+        
+        //現在表示しているグループメンバーに対する基準日のスケジュールを取得
+        List<Date> viewDateList = new ArrayList<Date>();
+        viewDateList.add(entity.baseDate);
         ScheduleSearchService.ScheduleView4Week result = 
                 scheduleSearchService.createScheduleView4Week(createTargetMemberKeys(userInfo.getMemberList()), 
-                    createViewDateList(entity.baseDate), userInfo.keyToString);
+                    viewDateList, userInfo.keyToString);
         
         JsonResult jsonResult = new JsonResult();
         jsonResult.setResult(result);
@@ -66,25 +70,12 @@ public class WeekController extends BaseController {
     }
 
     /**
-     * 表示対象日付List作成.
-     * 基準日から7日分の日付Listを作成します。
-     * @param baseDate 基準日
-     * @return 表示対象日付
-     */
-    private List<Date> createViewDateList(Date baseDate) {
-        Date endDate = DateTimeUtils.addDays(baseDate, 6);
-        return DateTimeUtils.createDateList(baseDate, endDate);
-    }
-
-    /**
      * 基準日計算.
      * リクエストパラメータの値を元に、基準日を算出します。
      * 当日の場合、システム日付が基準日となります。
      * リフレッシュの場合、引数の基準日をそのまま返却します。
-     * 翌週の場合、現在の基準日＋７日
      * 翌日の場合、現在の基準日＋１日
      * 前日の場合、現在の基準日−１日
-     * 先週の場合、現在の基準日−７日
      * が基準日となります。
      * @param baseDate 基準日
      * @return 算出基準日
@@ -92,24 +83,16 @@ public class WeekController extends BaseController {
     private Date calcBaseDate(Date baseDate) {
         
         String viewType = asString(VIEW_TYPE);
-        int addType = 0;
+        int moveDate = 0;
         if("today".equals(viewType)) {
             return CurrentDateUtils.getInstance().getCurrentDate();
         } else if("refresh".equals(viewType)) {
             return baseDate;
         } else if("next".equals(viewType)) {
-            addType = 1;
+            moveDate = 1;
         } else if("prev".equals(viewType)) {
-            addType = -1;
+            moveDate = -1;
         }
-        
-        int amount = 0;
-        String amountType = asString(AMOUNT_TYPE);
-        if("day".equals(amountType)) {
-            amount = 1;
-        } else if("week".equals(amountType)) {
-            amount = 7;
-        }
-        return DateTimeUtils.addDays(baseDate, addType * amount);
+        return DateTimeUtils.addDays(baseDate, moveDate);
     }
 }

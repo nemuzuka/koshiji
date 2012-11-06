@@ -17,28 +17,27 @@ package jp.co.nemuzuka.koshiji.controller.schedule.ajax;
 
 import java.text.SimpleDateFormat;
 
-import org.slim3.util.ApplicationMessage;
-
-import jp.co.nemuzuka.controller.JsonController;
 import jp.co.nemuzuka.entity.JsonResult;
 import jp.co.nemuzuka.entity.LabelValueBean;
 import jp.co.nemuzuka.entity.UserInfo;
 import jp.co.nemuzuka.koshiji.entity.ScheduleEntity;
 import jp.co.nemuzuka.utils.DateTimeUtils;
 
+import org.slim3.util.ApplicationMessage;
+
 /**
  * スケジュール月次表示用初期Controller.
  * Sessionに指定Memberを設定し、表示日付を初期化します。
  * @author kazumune
  */
-public class InitMonthController extends JsonController {
+public class InitMonthController extends BaseController {
 
     /* (非 Javadoc)
      * @see jp.co.nemuzuka.controller.JsonController#execute()
      */
     @Override
     protected Object execute() throws Exception {
-        ScheduleEntity entity = sessionScope(ScheduleEntity.KEY_NAME);
+        ScheduleEntity entity = getScheduleEntity();
         String targetMemberKeyString = asString("memberKeyString");
         UserInfo userInfo = getUserInfo();
         boolean exist = false;

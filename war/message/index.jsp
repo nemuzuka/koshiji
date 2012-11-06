@@ -34,6 +34,10 @@
 <script type="text/javascript" src="/js/message/header.js"></script>
 <script type="text/javascript" src="/js/message/message.js"></script>
 
+<script type="text/javascript" src="/js/schedule/common.js"></script>
+<script type="text/javascript" src="/js/schedule/day.js"></script>
+
+
 <div class="widget">
 <form class="form-horizontal">
 	<div id="result_area" class="message_list_top">

@@ -166,6 +166,12 @@ div.message_address {
 .week_schedule_table td.sche_terget_month{background:#FFF;}
 .week_schedule_table td.td1_month_schedule{vertical-align: top;padding: 2px;height: 60px;}
 
+.schedule_day_table td{width:70%;}
+.schedule_day_table td.name{
+	width:30%;
+	background: #FFC;
+}
+
 /* ダイアログテーブル(並べ替え・編集・フォロー) */
 .edit_table {border-top:2px solid #08C;border-bottom:2px solid #08C;width:100%;border-left:1px solid #08C;}
 .edit_table th,

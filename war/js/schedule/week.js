@@ -1,4 +1,15 @@
+/*
+ * Copyright 2012 Kazumune Katagiri. (http://d.hatena.ne.jp/nemuzuka)
+ * Licensed under the Apache License v2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
+ */
+
 $(function(){
+	$(window).unload(function(){
+		//画面を離れる場合
+		unBlockLoadingMsg();
+	});
+
 	renderWeekSchedule();
 });
 

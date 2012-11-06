@@ -7,6 +7,10 @@ $(function(){
 	});
 	
 	//Menu TOP
+	$("#menu_dashboard").on("click", function(){
+		moveUrl('/dashboard');
+	});
+
 	$("#menu_schedule").on("click", function(){
 		moveUrl('/schedule');
 	});
@@ -20,9 +24,10 @@ $(function(){
 	
 	if(targetName == 'message') {
 		//Messageを選択した際、ドロップダウンメニューを表示する
-		$("#memu1").attr({"data-toggle":"dropdown"});
+		$("#menu1").attr({"data-toggle":"dropdown"});
 	} else {
 		//Message未選択の場合、Message機能表示
+		$("#menu1 b.caret").hide();
 		$("#menu_message").on("click", function(){
 			moveUrl('/message');
 		});

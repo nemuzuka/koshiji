@@ -32,13 +32,13 @@
 								</c:forEach>
 							</select>
 						</div>
-					</li>					
+					</li>
 
 					<li class="dropdown" id="menu_message">
-						<a id="memu1" href="#" role="button" class="dropdown-toggle">
+						<a id="menu1" href="#" role="button" class="dropdown-toggle">
 						Message <b class="caret"></b>
 						</a>
-						<ul class="dropdown-menu" role="menu" aria-labelledby="memu1">
+						<ul class="dropdown-menu" role="menu" aria-labelledby="menu1">
 
 							<c:if test="${userInfo.groupManager == true}">
 								<li id="menu_groupAdmin"><a tabindex="-1" href="javascript:void(0)">グループ管理</a></li>

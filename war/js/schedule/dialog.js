@@ -1,3 +1,9 @@
+/*
+ * Copyright 2012 Kazumune Katagiri. (http://d.hatena.ne.jp/nemuzuka)
+ * Licensed under the Apache License v2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
+ */
+
 $(function(){
 	initScheduleEditDialog();
 	initScheduleDetailDialog();
@@ -250,9 +256,9 @@ function initScheduleEditDialog() {
 
 //スケジュール登録
 function executeSchedule() {
-	var params = createParams();
+	var params = createScheduleParams();
 
-	if(validate(params) == false) {
+	if(validateScheduleParams(params) == false) {
 		return;
 	}
 
@@ -284,7 +290,7 @@ function executeSchedule() {
 }
 
 //リクエストパラメータ生成
-function createParams() {
+function createScheduleParams() {
 	var params={};
 	params["title"] = $("#scheduleEditDialog_title").val();
 	params["startDate"] = unFormatDate($("#scheduleEditDialog_startDate").val());
@@ -303,7 +309,7 @@ function createParams() {
 }
 
 //登録validate
-function validate(params) {
+function validateScheduleParams(params) {
 	var v = new Validate();
 
 	v.addRules({value:params["startDate"],option:'required',error_args:"スケジュール開始日"});

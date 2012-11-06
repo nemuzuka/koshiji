@@ -12,6 +12,7 @@
 
 <html lang="jp">
 <c:import url="/import.jsp"/>
+<c:import url="/schedule/dialog.jsp"/>
 
 <body data-spy="scroll" data-target=".bs-docs-sidebar">
 
@@ -23,6 +24,9 @@
 			<section>
 				<div class="well sidebar-nav">
 					${param.subMenu}
+				</div>
+				<div class="well">
+					<div id="schedule_area" width="100%"></div>
 				</div>
 			</section>
 		</div>

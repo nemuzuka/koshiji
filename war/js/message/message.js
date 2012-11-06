@@ -13,6 +13,7 @@ $(function(){
 	initMessage();
 	refreshList();
 	
+	initSchedule();
 });
 
 //初期メッセージ表示処理
