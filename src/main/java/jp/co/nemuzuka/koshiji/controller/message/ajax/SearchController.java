@@ -31,6 +31,9 @@ import org.slim3.datastore.Datastore;
  */
 public class SearchController extends JsonController {
 
+    /** 表示対象のMessageKeyListのSession格納Key. */
+    private static final String SESSION_KEY = "all_message_keys";
+
     private MessageSearchService messageSearchService = MessageSearchServiceImpl.getInstance();
     
 	/* (非 Javadoc)
@@ -47,8 +50,10 @@ public class SearchController extends JsonController {
 	        param.limit = Integer.valueOf(limit);
 	        param.memberKey = Datastore.stringToKey(userInfo.keyToString);
 	        param.pageNo = asInteger("pageNo");
+	        param.messageKeyStrings = sessionScope(SESSION_KEY);
 	        
 	        result = messageSearchService.getList(param);
+	        sessionScope(SESSION_KEY, result.messageKeyStrings);
 	    } else {
 	        result = new MessageSearchService.Result();
 	    }

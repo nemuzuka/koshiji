@@ -231,6 +231,57 @@ public class MessageSearchServiceImplTest extends AppEngineTestCase4HRD {
     }
     
     /**
+     * getListのテスト.
+     * 2ページ目の表示データは、1ページ目の表示時の結果を元に表示されること
+     */
+    @Test
+    public void testGetList5() {
+        createInitData();
+        
+        //グループ0/メンバー0の1ページ目の検索
+        SearchParam param = new SearchParam();
+        param.groupKey = groupKeyList.get(0);
+        param.memberKey = memberKeyList.get(0);
+        param.limit = 1;
+        param.pageNo = 1;
+        
+        Result actual = service.getList(param);
+        GlobalTransaction.transaction.get().commit();
+        GlobalTransaction.transaction.get().begin();
+        
+        assertThat(actual.hasNextPage, is(true));
+        List<MessageModelEx> actualList = actual.list;
+        assertThat(actualList.size(), is(1));
+        
+        MessageModelEx actualMessage = actualList.get(0);
+        assertThat(actualMessage.getModel().getKey(), is(messageKeyList.get(1)));
+        assertThat(actualMessage.getCreateMemberName(), is("name0"));
+        assertThat(actualMessage.getLastUpdate(), is("20120101 1234"));
+        assertThat(actualMessage.isUnread(), is(true));
+
+        
+        //グループ0/メンバー0の2ページ目の検索
+        param = new SearchParam();
+        param.groupKey = groupKeyList.get(0);
+        param.memberKey = memberKeyList.get(0);
+        param.messageKeyStrings = actual.messageKeyStrings;
+        param.limit = 1;
+        param.pageNo = 2;
+        
+        actual = service.getList(param);
+        GlobalTransaction.transaction.get().commit();
+        GlobalTransaction.transaction.get().begin();
+        
+        assertThat(actual.hasNextPage, is(false));
+        actualList = actual.list;
+        assertThat(actualList.size(), is(1));
+        actualMessage = actualList.get(0);
+        assertThat(actualMessage.getModel().getKey(), is(messageKeyList.get(0)));
+        assertThat(actualMessage.getCreateMemberName(), is("name0"));
+        assertThat(actualMessage.getLastUpdate(), is("20120101 0123"));
+        assertThat(actualMessage.isUnread(), is(true));
+    }
+    /**
      * getCommentListのテスト.
      */
     @Test

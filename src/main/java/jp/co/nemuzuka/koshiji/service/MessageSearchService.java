@@ -18,6 +18,8 @@ package jp.co.nemuzuka.koshiji.service;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.arnx.jsonic.JSONHint;
+
 import jp.co.nemuzuka.koshiji.entity.CommentModelEx;
 import jp.co.nemuzuka.koshiji.entity.MessageModelEx;
 
@@ -75,6 +77,10 @@ public interface MessageSearchService {
 
         /** 1ページ辺りの表示件数. */
         public int limit;
+        
+        /** 表示対象MessageKeyStringList. */
+        public List<String> messageKeyStrings;
+        
     }
     
     /**
@@ -84,6 +90,11 @@ public interface MessageSearchService {
     class Result {
         /** 表示対象List. */
         public List<MessageModelEx> list = new ArrayList<MessageModelEx>();
+        
+        /** 表示対象MessageKeyStringList. */
+        @JSONHint(ignore=true)
+        public List<String> messageKeyStrings;
+        
         /** 次表示ページが存在するか. */
         public boolean hasNextPage;
     }

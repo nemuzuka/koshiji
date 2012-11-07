@@ -26,6 +26,9 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
+import org.slim3.datastore.Datastore;
+
+import com.google.appengine.api.datastore.Key;
 
 /**
  * 各種コンバートユーティリティ.
@@ -211,7 +214,22 @@ public class ConvertUtils {
 		String[] array = target.split(splitStr);
 		return createTrimStrArray(array);
 	}
-
+	
+	/**
+	 * KeyStringList→Key配列変換.
+	 * @param list 対象KeyStringList
+	 * @return 変換後Key配列
+	 */
+	public static Key[] toKeyArray(List<String> list) {
+	    Key[] retKeys = new Key[list.size()];
+	    int index = 0;
+	    for(String target : list) {
+	        retKeys[index] = Datastore.stringToKey(target);
+	        index++;
+	    }
+	    return retKeys;
+	}
+	
 	/**
 	 * String配列再作成.
 	 * ・全て半角SPの文字

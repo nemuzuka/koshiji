@@ -16,6 +16,7 @@
 package jp.co.nemuzuka.koshiji.service.impl;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -29,12 +30,14 @@ import jp.co.nemuzuka.koshiji.dao.MessageDao;
 import jp.co.nemuzuka.koshiji.dao.UnreadMessageDao;
 import jp.co.nemuzuka.koshiji.entity.CommentModelEx;
 import jp.co.nemuzuka.koshiji.entity.MessageModelEx;
+import jp.co.nemuzuka.koshiji.model.AbsModel;
 import jp.co.nemuzuka.koshiji.model.CommentModel;
 import jp.co.nemuzuka.koshiji.model.MemberModel;
 import jp.co.nemuzuka.koshiji.model.MessageAddressModel;
 import jp.co.nemuzuka.koshiji.model.MessageModel;
 import jp.co.nemuzuka.koshiji.model.UnreadMessageModel;
 import jp.co.nemuzuka.koshiji.service.MessageSearchService;
+import jp.co.nemuzuka.utils.ConvertUtils;
 import jp.co.nemuzuka.utils.DateTimeUtils;
 import jp.co.nemuzuka.utils.PagerUtils;
 
@@ -79,23 +82,41 @@ public class MessageSearchServiceImpl implements MessageSearchService {
         if(memberGroupConnDao.isJoinMember(param.memberKey, param.groupKey) == false) {
             return new Result();
         }
-        //表示する可能性のあるListを取得
-        List<MessageAddressModel> messageAddressList = 
-                messageAddressDao.getList(param.memberKey, param.groupKey);
-        Set<Key> messageKeySet = new HashSet<Key>();
-        for(MessageAddressModel target : messageAddressList) {
-            messageKeySet.add(target.getMessageKey());
+        
+        //1ページ目を表示する場合、表示する可能性のあるMessageKeyのListを取得し、DBに格納する
+        //2ページ以降の場合、DBからMessageKeyのListを取得する
+        //MessageKeyのListを元に表示対象のページに合致するデータを取得する
+        
+        List<MessageModel> targetMessageList = null;
+        if(param.pageNo == 1) {
+            //表示する可能性のあるMessageのKeyListを作成する
+            List<MessageAddressModel> messageAddressList = 
+                    messageAddressDao.getList(param.memberKey, param.groupKey);
+            Set<Key> messageKeySet = new HashSet<Key>();
+            for(MessageAddressModel target : messageAddressList) {
+                messageKeySet.add(target.getMessageKey());
+            }
+
+            //MessageModelの情報を取得
+            //※本当は、ソート順を意識してKeyだけ取得し、Keyに紐付くMessageを取得するようにしたかったが、
+            //　slim3ではasKeyListの場合、ソート順は指定できないので全件メモリ上に保持するようにした
+            List<MessageModel> allMessageList = 
+                    messageDao.getList(messageKeySet.toArray(new Key[0]));
+
+            //表示するページ番号、ページあたりの表示件数を参照し、表示するMessageを指定して取得
+            targetMessageList = (List<MessageModel>) PagerUtils.createTargetList(allMessageList, 
+                param.pageNo, param.limit);
+            
+            //表示対象のMessageKeyを戻り値として設定
+            param.messageKeyStrings = toKeyStringList(allMessageList);
+            
+        } else {
+            List<String> targetMessageKeyList = 
+                    (List<String>) PagerUtils.createTargetList(param.messageKeyStrings, 
+                        param.pageNo, param.limit);
+            Key[] targetMessageKeys = ConvertUtils.toKeyArray(targetMessageKeyList);
+            targetMessageList = messageDao.getList(targetMessageKeys);
         }
-
-        //MessageModelの情報を取得
-        //※本当は、ソート順を意識してKeyだけ取得し、Keyに紐付くMessageを取得するようにしたかったが、
-        //　slim3ではasKeyListの場合、ソート順は指定できないので全件メモリ上に保持するようにした
-        List<MessageModel> allMessageList = 
-                messageDao.getList(messageKeySet.toArray(new Key[0]));
-
-        //表示するページ番号、ページあたりの表示件数を参照し、表示するMessageを指定して取得
-        List<MessageModel> targetMessageList = (List<MessageModel>) PagerUtils.createTargetList(allMessageList, 
-            param.pageNo, param.limit);
         
         Set<Key> targetMessageKey = new HashSet<Key>();
         Set<Key> createMemberKey = new HashSet<Key>();
@@ -112,8 +133,11 @@ public class MessageSearchServiceImpl implements MessageSearchService {
         Map<Key, UnreadMessageModel> unreadMessageMap = 
                 unreadMessageDao.getMap(param.memberKey, targetMessageKey.toArray(new Key[0]));
         
-        return createResult(targetMessageList, createMemberMap, unreadMessageMap, 
+        Result result =  createResult(targetMessageList, createMemberMap, unreadMessageMap, 
             param.memberKey, param.limit);
+        result.messageKeyStrings = param.messageKeyStrings;
+        return result;
+        
     }
 
     /* (非 Javadoc)
@@ -261,5 +285,18 @@ public class MessageSearchServiceImpl implements MessageSearchService {
         unreadMessageDao.delete(deleteUnreadMessageKey.toArray(new Key[0]));
 
         return result;
+    }
+
+    /**
+     * ModelKeyStringList作成.
+     * @param list 作成対象ModelList
+     * @return 変換後ModelKeyStringList
+     */
+    private static List<String> toKeyStringList(List<MessageModel> list) {
+        List<String> retList = new ArrayList<String>();
+        for(AbsModel target : list) {
+            retList.add(target.getKeyToString());
+        }
+        return retList;
     }
 }
