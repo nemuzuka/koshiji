@@ -113,6 +113,18 @@ div.message_address {
 	cursor: auto;
 }
 
+.message_info {
+	font-size:90%;
+	color: white;
+	text-align: center;
+	background: violet;
+	min-height: 35px;
+	cursor: pointer;
+	vertical-align: middle;
+	line-height: 35px;
+}
+
+
 /** toast表示用. */
 .toast-container
 {

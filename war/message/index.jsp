@@ -40,6 +40,8 @@
 
 <div class="widget">
 <form class="form-horizontal">
+	<div id="info_area" class="message_info" style="display: none;">
+	</div>
 	<div id="result_area" class="message_list_top">
 	</div>
 	<div id="footer_area" class="message_list_footer">

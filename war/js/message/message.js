@@ -14,11 +14,47 @@ $(function(){
 	refreshList();
 	
 	initSchedule();
+	setCheckPollingFunction();
 });
+
+//一定時間経過後の関数呼び出し設定
+function setCheckPollingFunction() {
+	setTimeout(function() { unreadMessageCheck(); }, 60000);
+}
+
+//未読Messageの存在チェック
+function unreadMessageCheck() {
+	setAjaxNoLoadingMsg();
+	var task;
+	task = $.ajax({
+		type: "POST",
+		url: "/message/ajax/searchUnreadMessage"
+	}).pipe(
+		function(data) {
+
+			//共通エラーチェック
+			if(errorCheck(data) == false) {
+				return;
+			}
+			$("#info_area").empty();
+			$("#info_area").off();
+			$("#info_area").hide();
+			if(data.result != 0) {
+				var $info = $("<span />").text("未読のMessageが" + data.result + "件あります");
+				$("#info_area").append($("<i />").addClass("icon-info-sign icon-white")).append($info);
+				$("#info_area").on("click", function(){
+					refreshList();
+				});
+				$("#info_area").show();
+			}
+			
+			setCheckPollingFunction();
+		}
+	);
+}
 
 //初期メッセージ表示処理
 function refreshList() {
-	$("#result_area").empty();
 	searchMessage(1);
 }
 
@@ -51,6 +87,13 @@ function renderList(data, pageNo) {
 	//tokenの設定
 	$("#token").val(data.token);
 
+	if(pageNo == 1) {
+		$("#result_area").empty();
+		$("#info_area").empty();
+		$("#info_area").off();
+		$("#info_area").hide();
+	}
+	
 	var result = data.result.list;
 	$.each(result, function(){
 		var model = this.model;
@@ -116,11 +159,12 @@ function renderList(data, pageNo) {
 		var msgSpan = $("<small />").text("これ以降に表示するメッセージはありません。");
 		var $info_icon = $("<i />").addClass("icon-info-sign");
 		$("#footer_area").addClass("no_message").append($info_icon).append(msgSpan);
-		$("#footer_area").off("click");
+		$("#footer_area").off();
 	} else {
 		//次ページへのリンク表示
 		var $a = $("<a />").attr({"href":"javascript:void(0)"}).text("さらに読み込む");
 		$("#footer_area").removeClass("no_message").append($a);
+		$("#footer_area").off();
 		$("#footer_area").on("click", function(){
 			var targetPage = pageNo + 1;
 			searchMessage(targetPage);
@@ -448,11 +492,9 @@ function createMessage() {
 				return;
 			}
 			
-			//メッセージを表示して、一覧歳表示
 			infoCheck(data);
-			viewLoadingMsg();
 			clearMessageInput();
-			refreshList();
+			reSetToken();
 		}
 	);
 }

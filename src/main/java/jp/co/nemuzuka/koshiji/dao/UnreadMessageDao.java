@@ -121,12 +121,40 @@ public class UnreadMessageDao extends AbsDao {
     }
     
     /**
+     * 未読データ一覧取得.
+     * 指定したMember、Groupの未読データを取得します。
+     * @param memberKey MemberKey
+     * @param groupKey GroupKey
+     * @return 未読データ一覧
+     */
+    public List<UnreadMessageModel> getList(Key memberKey, Key groupKey) {
+        UnreadMessageModelMeta e = (UnreadMessageModelMeta) getModelMeta();
+        Set<FilterCriterion> filter = new HashSet<FilterCriterion>();
+        filter.add(e.memberKey.equal(memberKey));
+        filter.add(e.groupKey.equal(groupKey));
+        return getList(filter, null, e.key.asc);
+    }
+    
+    /**
      * 未読データ削除.
      * 指定したMessageの未読データを削除します。
      * @param messageKey MessageKey
      */
     public void delete4MessageKey(Key messageKey) {
         List<UnreadMessageModel> list = getList(messageKey);
+        for(UnreadMessageModel target : list) {
+            delete(target.getKey());
+        }
+    }
+    
+    /**
+     * 未読データ削除.
+     * 指定したMessageKey、MemberKeyの未読データを削除します。
+     * @param messageKey MessageKey
+     * @param memberKey MemberKey
+     */
+    public void delete4MemberAndMessageKey(Key messageKey, Key memberKey) {
+        List<UnreadMessageModel> list = getList(memberKey, new Key[]{messageKey});
         for(UnreadMessageModel target : list) {
             delete(target.getKey());
         }

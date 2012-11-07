@@ -108,9 +108,13 @@ public class MessageEditServiceImpl implements MessageEditService {
         if(message.getCreateMemberKey().equals(memberKey)) {
             //作成者が削除した場合、Messageと紐付く全てのユーザを削除
             list = messageAddressDao.getList4Message(messageKey, groupKey);
+            //Messageの未読状態を削除
+            unreadMessageDao.delete4MessageKey(messageKey);
         } else {
             //作成者以外の場合、Messageと自分のユーザ関連を削除
             list = messageAddressDao.getList4Member(messageKey, groupKey, memberKey);
+            //自分とMessageの未読状態を削除
+            unreadMessageDao.delete4MemberAndMessageKey(messageKey, memberKey);
         }
         
         for(MessageAddressModel target : list) {

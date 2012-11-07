@@ -209,6 +209,18 @@ public class MessageSearchServiceImpl implements MessageSearchService {
         return result;
     }
     
+
+    /* (非 Javadoc)
+     * @see jp.co.nemuzuka.koshiji.service.MessageSearchService#getUnreadMessage(com.google.appengine.api.datastore.Key, com.google.appengine.api.datastore.Key)
+     */
+    @Override
+    public List<UnreadMessageModel> getUnreadMessage(Key memberKey, Key groupKey) {
+        //MemberがGroupと関連づいていない場合、処理終了
+        if(memberGroupConnDao.isJoinMember(memberKey, groupKey) == false) {
+            return new ArrayList<UnreadMessageModel>();
+        }
+        return unreadMessageDao.getList(memberKey, groupKey);
+    }
     /**
      * 宛先文字列作成.
      * Member名を文字連結したものを返却します。

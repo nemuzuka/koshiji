@@ -22,6 +22,7 @@ import net.arnx.jsonic.JSONHint;
 
 import jp.co.nemuzuka.koshiji.entity.CommentModelEx;
 import jp.co.nemuzuka.koshiji.entity.MessageModelEx;
+import jp.co.nemuzuka.koshiji.model.UnreadMessageModel;
 
 import com.google.appengine.api.datastore.Key;
 
@@ -57,6 +58,15 @@ public interface MessageSearchService {
      * @return 検索結果
      */
     CommentResult getCommentList(Key messageKey, Key memberKey, Key groupKey);
+    
+    /**
+     * 未読Message一覧取得.
+     * 検索条件に紐付く未読Messageを取得します。
+     * @param memberKey MemberKey
+     * @param groupKey GroupKey
+     * @return 検索結果
+     */
+    List<UnreadMessageModel> getUnreadMessage(Key memberKey, Key groupKey);
     
     /**
      * 検索条件.

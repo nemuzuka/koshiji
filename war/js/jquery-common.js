@@ -32,6 +32,7 @@ function closeModalDialog() {
 	}
 }
 
+//Ajax通信時の共通設定
 function setAjaxDefault() {
 	$.ajaxSetup({
 		timeout: 30000,		//ミリ秒
@@ -54,6 +55,29 @@ function setAjaxDefault() {
 		}
 	});
 }
+
+//Ajax通信時に読込中メッセージを表示しない場合の設定
+function setAjaxNoLoadingMsg() {
+	$.ajaxSetup({
+		timeout: 30000,		//ミリ秒
+		ifModified: true,
+		cache: false,
+		async: true,		//非同期通信
+		
+		//通信前の処理を定義
+		beforeSend: function(jqXHR, settings) {
+		},
+		//通信成功時の処理を定義
+		success : function(data, dataType) {
+		},
+
+		// エラー・ハンドラを定義（エラー時にダイアログ表示）
+		error: function(xhr, status, err) {
+			alert('通信エラーが発生しました。');
+		}
+	});
+}
+
 
 //Token再設定
 //idが'token'であるhiddenオブジェクトに対して、
