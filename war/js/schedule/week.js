@@ -11,6 +11,7 @@ $(function(){
 	});
 
 	renderWeekSchedule();
+	setCheckPollingFunction();
 });
 
 //週次スケジュール初期描画

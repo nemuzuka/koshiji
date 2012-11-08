@@ -36,7 +36,7 @@
 
 					<li class="dropdown" id="menu_message">
 						<a id="menu1" href="#" role="button" class="dropdown-toggle">
-						Message <b class="caret"></b>
+						<span id="menu1_icon"></span>Message <b class="caret"></b>
 						</a>
 						<ul class="dropdown-menu" role="menu" aria-labelledby="menu1">
 
