@@ -27,6 +27,6 @@ public class IndexController extends HtmlController {
         //メールアドレス情報を元に、ユーザ情報を作成する
         UserInfo userInfo = userInfoService.createUserInfo(userService.getCurrentUser().getEmail());
         sessionScope(USER_INFO_KEY, userInfo);
-        return forward("/message/");
+        return forward("/dashboard/");
     }
 }

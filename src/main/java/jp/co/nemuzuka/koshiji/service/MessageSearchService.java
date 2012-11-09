@@ -20,6 +20,7 @@ import java.util.List;
 
 import net.arnx.jsonic.JSONHint;
 
+import jp.co.nemuzuka.entity.LabelValueBean;
 import jp.co.nemuzuka.koshiji.entity.CommentModelEx;
 import jp.co.nemuzuka.koshiji.entity.MessageModelEx;
 import jp.co.nemuzuka.koshiji.model.UnreadMessageModel;
@@ -67,6 +68,15 @@ public interface MessageSearchService {
      * @return 検索結果
      */
     List<UnreadMessageModel> getUnreadMessage(Key memberKey, Key groupKey);
+    
+    /**
+     * グループ/未読Message一覧取得.
+     * Memberが所属する全てのグループの未読Message一覧
+     * @param memberKey MemberKey
+     * @param groupList グループ一覧
+     * @return グループ/未読Message一覧
+     */
+    List<GroupUnreadMessage> getGroupUnreadMessage(Key memberKey, List<LabelValueBean> groupList);
     
     /**
      * 検索条件.
@@ -118,5 +128,18 @@ public interface MessageSearchService {
         public List<CommentModelEx> list = new ArrayList<CommentModelEx>();
         /** 宛先文字列. */
         public String address = "";
+    }
+    
+    /**
+     * グループ毎の未読Message件数.
+     * @author kazumune
+     */
+    class GroupUnreadMessage {
+        /** グループKey文字列. */
+        public String groupKeyString;
+        /** グループ名. */
+        public String groupName;
+        /** 未読Message件数. */
+        public Integer unreadMessageCnt;
     }
 }

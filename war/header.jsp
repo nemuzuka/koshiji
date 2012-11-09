@@ -34,6 +34,10 @@
 						</div>
 					</li>
 
+					<li class="" id="menu_dashboard">
+						<a href="javascript:void(0)">Dashboard</a>
+					</li>
+
 					<li class="dropdown" id="menu_message">
 						<a id="menu1" href="#" role="button" class="dropdown-toggle">
 						<span id="menu1_icon"></span>Message <b class="caret"></b>

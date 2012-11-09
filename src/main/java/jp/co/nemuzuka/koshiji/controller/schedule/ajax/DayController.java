@@ -60,7 +60,7 @@ public class DayController extends BaseController {
         List<Date> viewDateList = new ArrayList<Date>();
         viewDateList.add(entity.baseDate);
         ScheduleSearchService.ScheduleView4Week result = 
-                scheduleSearchService.createScheduleView4Week(createTargetMemberKeys(userInfo.getMemberList()), 
+                scheduleSearchService.createScheduleView4Week(createTargetMemberKeys(userInfo), 
                     viewDateList, userInfo.keyToString);
         
         JsonResult jsonResult = new JsonResult();

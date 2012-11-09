@@ -124,6 +124,20 @@ div.message_address {
 	line-height: 35px;
 }
 
+/** 参加グループ表示用. */
+.group_item {
+	background: White;
+	cursor: pointer;
+	padding: 9px 12px;
+	border-bottom: 1px solid #E3E3E3;
+}
+
+.group_item.hover {
+	background: ghostWhite;
+	border-right: 1px solid #E3E3E3;
+	border-left: 1px solid #E3E3E3;
+}
+
 
 /** toast表示用. */
 .toast-container

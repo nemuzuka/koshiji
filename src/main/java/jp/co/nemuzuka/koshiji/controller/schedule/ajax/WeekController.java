@@ -56,7 +56,7 @@ public class WeekController extends BaseController {
         
         //基準日から1週間分のスケジュールを取得
         ScheduleSearchService.ScheduleView4Week result = 
-                scheduleSearchService.createScheduleView4Week(createTargetMemberKeys(userInfo.getMemberList()), 
+                scheduleSearchService.createScheduleView4Week(createTargetMemberKeys(userInfo), 
                     createViewDateList(entity.baseDate), userInfo.keyToString);
         
         JsonResult jsonResult = new JsonResult();

@@ -17,11 +17,15 @@ package jp.co.nemuzuka.koshiji.service.impl;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.slim3.datastore.Datastore;
+
+import jp.co.nemuzuka.entity.LabelValueBean;
 import jp.co.nemuzuka.koshiji.dao.CommentDao;
 import jp.co.nemuzuka.koshiji.dao.MemberDao;
 import jp.co.nemuzuka.koshiji.dao.MemberGroupConnDao;
@@ -221,6 +225,40 @@ public class MessageSearchServiceImpl implements MessageSearchService {
         }
         return unreadMessageDao.getList(memberKey, groupKey);
     }
+    
+    /* (非 Javadoc)
+     * @see jp.co.nemuzuka.koshiji.service.MessageSearchService#getGroupUnreadMessage(com.google.appengine.api.datastore.Key, java.util.List)
+     */
+    @Override
+    public List<GroupUnreadMessage> getGroupUnreadMessage(Key memberKey,
+            List<LabelValueBean> groupList) {
+        
+        //グループ毎の未読Message件数Mapを作成
+        Map<String, Integer> unreadMessageMap = new HashMap<String, Integer>();
+        List<UnreadMessageModel> unreadList =  unreadMessageDao.getList4Member(memberKey);
+        for(UnreadMessageModel target : unreadList) {
+            String groupKeyString = Datastore.keyToString(target.getGroupKey());
+            Integer count = unreadMessageMap.get(groupKeyString);
+            if(count == null) {
+                count = 0;
+            }
+            count++;
+            unreadMessageMap.put(groupKeyString, count);
+        }
+        
+        //戻り値を作成
+        List<GroupUnreadMessage> list = new ArrayList<GroupUnreadMessage>();
+        for(LabelValueBean target : groupList) {
+            GroupUnreadMessage entity = new GroupUnreadMessage();
+            entity.groupKeyString = target.getValue();
+            entity.groupName = target.getLabel();
+            entity.unreadMessageCnt = unreadMessageMap.get(entity.groupKeyString);
+            list.add(entity);
+        }
+        
+        return list;
+    }
+    
     /**
      * 宛先文字列作成.
      * Member名を文字連結したものを返却します。

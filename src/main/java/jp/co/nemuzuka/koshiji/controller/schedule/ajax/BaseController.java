@@ -21,6 +21,7 @@ import java.util.Set;
 
 import jp.co.nemuzuka.controller.JsonController;
 import jp.co.nemuzuka.entity.LabelValueBean;
+import jp.co.nemuzuka.entity.UserInfo;
 import jp.co.nemuzuka.koshiji.entity.ScheduleEntity;
 import jp.co.nemuzuka.koshiji.service.ScheduleSearchService;
 import jp.co.nemuzuka.koshiji.service.impl.ScheduleSearchServiceImpl;
@@ -56,10 +57,13 @@ public abstract class BaseController extends JsonController {
     
     /**
      * 表示対象MemberKeySet作成
-     * @param memberList 選択グループに紐付くMemberList
+     * @param userInfo UserInfo
      * @return MemberKeySet
      */
-    protected Set<String> createTargetMemberKeys(List<LabelValueBean> memberList) {
+    protected Set<String> createTargetMemberKeys(UserInfo userInfo) {
+        
+        List<LabelValueBean> memberList = userInfo.memberList;
+        
         Set<String> ret = new LinkedHashSet<String>();
         for(LabelValueBean target : memberList) {
             ret.add(target.getValue());
