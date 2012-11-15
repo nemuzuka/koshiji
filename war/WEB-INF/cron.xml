@@ -7,7 +7,7 @@
   </cron>
   <cron>
     <url>/admin/kickbackends</url>
-    <description>delete older messages</description>
+    <description>delete older messages and schedule</description>
     <schedule>every day 03:30</schedule>
     <timezone>Asia/Tokyo</timezone>
     <target>deletemessage</target> 

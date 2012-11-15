@@ -10,7 +10,7 @@ import com.google.appengine.api.taskqueue.TaskOptions.Builder;
 import com.google.appengine.api.taskqueue.TaskOptions.Method;
 
 /**
- * 一定期間過ぎたMessageを削除する処理をTaskqueueから起動する
+ * 一定期間過ぎたMessage、Scheduleを削除する処理をTaskqueueから起動する
  * @author kazumune
  */
 public class KickbackendsController extends Controller {
@@ -24,6 +24,9 @@ public class KickbackendsController extends Controller {
         queue.add(Builder.withUrl("/admin/deleteMessage").method(Method.GET).header("Host", 
             BackendServiceFactory.getBackendService().getBackendAddress("deleteMessage")));
 
+        queue.add(Builder.withUrl("/admin/deleteSchedule").method(Method.GET).header("Host", 
+            BackendServiceFactory.getBackendService().getBackendAddress("deleteMessage")));
+        
         response.setContentType("text/plain");
         response.getWriter().println("called");
         return null;

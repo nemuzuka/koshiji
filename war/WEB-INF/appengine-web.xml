@@ -18,9 +18,10 @@
   <system-properties>
     <property name="java.util.logging.config.file" value="WEB-INF/classes/logging.properties"/>
     <property name="jp.co.nemuzuka.member.map.refresh.min" value="60"/>
-    <property name="jp.co.nemuzuka.message.delete.day" value="30"/>
+    <property name="jp.co.nemuzuka.message.delete.day" value="10"/>
     <property name="jp.co.nemuzuka.message.limit" value="10"/>
     <property name="jp.co.nemuzuka.message.delete.comment" value="** このコメントは削除されました **"/>
+    <property name="jp.co.nemuzuka.schedule.delete.day" value="60"/>
   </system-properties>
 
   <ssl-enabled>true</ssl-enabled>

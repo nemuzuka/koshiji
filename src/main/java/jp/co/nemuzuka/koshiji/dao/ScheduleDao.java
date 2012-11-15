@@ -102,6 +102,20 @@ public class ScheduleDao extends AbsDao {
     }
     
     /**
+     * Key一覧取得.
+     * 終了日　＜＝　指定日付
+     * の関係を持つScheduleのKeyListを取得します。
+     * @param targetDate 指定日付
+     * @return 該当レコード
+     */
+    public List<Key> getKeyList(Date targetDate) {
+        ScheduleModelMeta e = (ScheduleModelMeta) getModelMeta();
+        Set<FilterCriterion> filter = new HashSet<FilterCriterion>();
+        filter.add(e.endDate.lessThanOrEqual(targetDate));
+        return getKeyList(filter);
+    }
+    
+    /**
      * マージ処理.
      * 3つのListをマージして、新しいListを作成します。
      * 重複しているレコードは1つにまとめられます。
