@@ -49,6 +49,9 @@ function initAddMemberDialog() {
 	$("#addMemberDialog_execute").on("click", function(){
 		executeAddMember();
 	});
+	$("#addMemberDialog_listExecute").on("click", function(){
+		executeAddGroupMember4List();
+	});
 }
 
 //Memberをグループに追加します
@@ -177,8 +180,67 @@ function executeGroup() {
 //メンバー追加ダイアログ表示
 function showAddMemberDialog() {
 	$("#addMemberDialog_email").val("");
-	$('#addMemberDialog').modal('show');	
+	
+	//自分が参照できるMember一覧取得
+	setAjaxDefault();
+	return $.ajax({
+		type: "POST",
+		url: "/message/ajax/searchAddMembers"
+	}).pipe(
+		function(data) {
+			//共通エラーチェック
+			if(errorCheck(data) == false) {
+				return;
+			}
+			renderAddMemberList(data);
+			$('#addMemberDialog').modal('show');	
+		}
+	);
 }
+
+//追加対象のMember一覧を描画します
+function renderAddMemberList(data) {
+	$("#addMemberDialog_members").empty();
+	var result = data.result;
+	$.each(result, function(){
+		var $label = $("<label />").addClass("checkbox");
+		var $checkBox = $("<input />").attr({"type":"checkbox", "name":"addMembers4List"}).val(this.value);
+		var $viewSpan = $("<span />").text(this.label);
+		$label.append($checkBox).append($viewSpan);
+		$("#addMemberDialog_members").append($label);
+	});
+}
+
+//Member一覧からGroupへMemberを追加します。
+function executeAddGroupMember4List() {
+	var params = {};
+	params["jp.co.nemuzuka.token"] = $("#token").val();
+	params["addMembers[]"] = createArray4Checkbox("addMembers4List");
+	
+	setAjaxDefault();
+	return $.ajax({
+		type: "POST",
+		url: "/message/ajax/addGroupMember4List",
+		data: params
+	}).pipe(
+		function(data) {
+			//共通エラーチェック
+			if(errorCheck(data) == false) {
+				if(data.status == -1 ) {
+					//validateの場合、tokenを再発行
+					return reSetToken();
+				}
+				return;
+			}
+			infoCheck(data);
+			
+			//Messageを再表示
+			var selectedGroup = $("#groupList").val();
+			setTimeout(function(){ changeGroup(selectedGroup); }, 1000);
+		}
+	);
+}
+
 
 //Memberとグループの関連を削除します。
 function removeGroup() {

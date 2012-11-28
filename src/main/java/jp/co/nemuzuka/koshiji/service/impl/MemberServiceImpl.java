@@ -15,10 +15,12 @@
  */
 package jp.co.nemuzuka.koshiji.service.impl;
 
+import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.slim3.datastore.Datastore;
@@ -28,6 +30,7 @@ import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.Text;
 
 import jp.co.nemuzuka.common.UniqueKey;
+import jp.co.nemuzuka.entity.LabelValueBean;
 import jp.co.nemuzuka.entity.MemberKeyEntity;
 import jp.co.nemuzuka.exception.AlreadyExistKeyException;
 import jp.co.nemuzuka.koshiji.dao.MemberDao;
@@ -165,6 +168,22 @@ public class MemberServiceImpl implements MemberService {
         return getMemberKeyEntity().keyMap.get(mail);
     }
 
+
+    /* (非 Javadoc)
+     * @see jp.co.nemuzuka.koshiji.service.MemberService#getList4Acquaintance(com.google.appengine.api.datastore.Key, com.google.appengine.api.datastore.Key)
+     */
+    @Override
+    public List<LabelValueBean> getList4Acquaintance(Key memberKey, Key groupKey) {
+        Set<Key> acquaintanceKey = memberGroupConnService.getList4Acquaintance(memberKey, groupKey);
+        List<MemberModel> memberList = memberDao.getList(acquaintanceKey.toArray(new Key[0]));
+        List<LabelValueBean> list = new ArrayList<LabelValueBean>();
+        for(MemberModel target : memberList) {
+            list.add(new LabelValueBean(
+                target.getName(), 
+                target.getKeyToString()));
+        }
+        return list;
+    }
     /**
      * MemberKeyEntity取得.
      * Memcacheよりデータを取得し、存在ない or 期限切れの場合、最新情報に更新します。

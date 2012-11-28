@@ -19,6 +19,7 @@ import java.util.ConcurrentModificationException;
 import java.util.List;
 import java.util.Map;
 
+import jp.co.nemuzuka.entity.LabelValueBean;
 import jp.co.nemuzuka.koshiji.form.MemberForm;
 import jp.co.nemuzuka.koshiji.model.MemberModel;
 
@@ -88,4 +89,14 @@ public interface MemberService {
 	 * @return 該当MemberKey(存在しない場合、null)
 	 */
 	Key getKey(String mail);
+	
+	/**
+	 * 未参加MemberList取得.
+	 * 対象Memberが参加しているGroupのうち、
+	 * 対象Groupにまだ参加していないMember情報を取得します。
+	 * @param memberKey 対象MemberKey
+	 * @param groupKey 対象GroupKey
+	 * @return 未参加MemberList
+	 */
+	List<LabelValueBean> getList4Acquaintance(Key memberKey, Key groupKey);
 }

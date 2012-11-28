@@ -31,7 +31,7 @@
 
 <c:param name="content">
 
-<script type="text/javascript" src="/js/message/header.js"></script>
+<script type="text/javascript" src="/js/message/header.js?version=1.1"></script>
 <script type="text/javascript" src="/js/message/message.js"></script>
 
 <script type="text/javascript" src="/js/schedule/common.js"></script>

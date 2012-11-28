@@ -178,4 +178,41 @@ public class MemberGroupConnServiceImpl implements MemberGroupConnService {
         }
         return retList;
     }
+
+    /* (非 Javadoc)
+     * @see jp.co.nemuzuka.koshiji.service.MemberGroupConnService#getList4Acquaintance(com.google.appengine.api.datastore.Key, com.google.appengine.api.datastore.Key)
+     */
+    @Override
+    public Set<Key> getList4Acquaintance(Key memberKey, Key groupKey) {
+        //Memberが所属するGroupを取得
+        List<MemberGroupConnModel> joinGroups = memberGroupConnDao.getList(memberKey);
+        
+        //対象Group以外のGroupKeyを取得
+        Set<Key> searchGroupKeySet = new HashSet<Key>();
+        for(MemberGroupConnModel target : joinGroups) {
+            if(target.getGroupKey().equals(groupKey) == false) {
+                searchGroupKeySet.add(target.getGroupKey());
+            }
+        }
+        
+        //対象Groupに紐付くMemberデータを取得
+        List<MemberGroupConnModel> unTargetMemberList = memberGroupConnDao.getMemberList(groupKey);
+        Set<Key> unTargetMemberSet = new HashSet<Key>();
+        for(MemberGroupConnModel target : unTargetMemberList) {
+            unTargetMemberSet.add(target.getMemberKey());
+        }
+        
+        //検索対象Groupに紐付くデータを取得
+        List<MemberGroupConnModel> targetMemberList = 
+                memberGroupConnDao.getMemberList(searchGroupKeySet.toArray(new Key[0]));
+        Set<Key> targetMemberSet = new HashSet<Key>();
+        for(MemberGroupConnModel target : targetMemberList) {
+            Key targetMemberKey = target.getMemberKey();
+            if(unTargetMemberSet.contains(targetMemberKey) == false) {
+                //対象Groupに紐付くMemberでない場合、戻り値に設定
+                targetMemberSet.add(target.getMemberKey());
+            }
+        }
+        return targetMemberSet;
+    }
 }

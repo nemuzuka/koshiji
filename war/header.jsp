@@ -82,7 +82,7 @@
 </div>
 
 <%-- Modalダイアログ --%>
-<div class="modal hide fade" id="groupNameDialog">
+<div class="modal hide" id="groupNameDialog">
 	<div class="modal-header">
 		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
 		<h3>新規グループ作成</h3>
@@ -103,7 +103,7 @@
 	</div>
 </div>
 
-<div class="modal hide fade" id="groupAdminDialog">
+<div class="modal hide" id="groupAdminDialog">
 	<div class="modal-header">
 		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
 		<h3>グループ管理</h3>
@@ -133,7 +133,7 @@
 	</div>
 </div>
 
-<div class="modal hide fade" id="addMemberDialog">
+<div class="modal hide" id="addMemberDialog">
 	<div class="modal-header">
 		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
 		<h3>メンバー追加</h3>
@@ -141,21 +141,33 @@
 	<div class="modal-body">
 		<div class="form-horizontal">
 			<div class="control-group">
-				<label class="control-label" for="addMemberDialog_email">メールアドレス</label>
+				<label class="control-label">一覧から選択</label>
+				<div class="controls">
+					<div class="message_address warning" id="addMemberDialog_members"></div>
+					<a href="javascript:void(0)" class="btn btn-primary" id="addMemberDialog_listExecute">追加する</a>
+				</div>
+			</div>
+
+			<hr>
+
+			<div class="control-group">
+				<label class="control-label" for="addMemberDialog_email">直接メールアドレス入力</label>
 				<div class="controls">
 					<input type="text" class="input-xlarge" id="addMemberDialog_email" placeholder="追加するメンバーのメールアドレスは？" />
 					<p class="text-warning">※Gmailのアドレスでないとログインできません</p>
+					<a href="javascript:void(0)" class="btn btn-primary" id="addMemberDialog_execute">追加する</a>
 				</div>
 			</div>
+
 		</div>
+		<hr>
 	</div>
 	<div class="modal-footer">
 		<a href="javascript:void(0)" class="btn" id="addMemberDialog_close">Close</a>
-		<a href="javascript:void(0)" class="btn btn-primary" id="addMemberDialog_execute">追加する</a>
 	</div>
 </div>
 
-<div class="modal hide fade" id="personalSettingsDialog">
+<div class="modal hide" id="personalSettingsDialog">
 	<div class="modal-header">
 		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
 		<h3>ユーザ情報変更</h3>

@@ -16,6 +16,7 @@
 package jp.co.nemuzuka.koshiji.service;
 
 import java.util.List;
+import java.util.Set;
 
 import jp.co.nemuzuka.entity.LabelValueBean;
 import jp.co.nemuzuka.koshiji.model.MemberGroupConnModel;
@@ -77,5 +78,15 @@ public interface MemberGroupConnService {
      * @param groupKey GroupKey
      */
     void deleteMemberGroupConn(Key memberKey, Key groupKey);
+    
+    /**
+     * 未参加MemberKeySet取得.
+     * 対象Memberが参加しているGroupのうち、
+     * 対象Groupにまだ参加していないMember情報を取得します。
+     * @param memberKey 対象MemberKey
+     * @param groupKey 対象GroupKey
+     * @return 未参加MemberKeySet
+     */
+    Set<Key> getList4Acquaintance(Key memberKey, Key groupKey);
     
 }

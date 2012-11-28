@@ -40,4 +40,12 @@ public interface MemberCreateService {
      */
     void createNormalMember(String email, String groupKeyString);
     
+    /**
+     * グループメンバー作成.
+     * 指定したMemberをグループのメンバーとして関連付けます。
+     * @param memberKeyStrings MemberKey配列
+     * @param groupKeyString グループKey文字列
+     */
+    void createNormalMember(String[] memberKeyStrings, String groupKeyString);
+    
 }

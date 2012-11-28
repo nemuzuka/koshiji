@@ -93,6 +93,22 @@ public class MemberCreateServiceImpl implements MemberCreateService {
         memberGroupConnService.put(memberKey, groupKey, false);
     }
 
+    /* (非 Javadoc)
+     * @see jp.co.nemuzuka.koshiji.service.MemberCreateService#createNormalMember(java.lang.String[], java.lang.String)
+     */
+    @Override
+    public void createNormalMember(String[] memberKeyStrings,
+            String groupKeyString) {
+        if(memberKeyStrings == null || memberKeyStrings.length == 0) {
+            return;
+        }
+        Key groupKey = Datastore.stringToKey(groupKeyString);
+        for(String keyString : memberKeyStrings) {
+            Key memberKey = Datastore.stringToKey(keyString);
+            memberGroupConnService.put(memberKey, groupKey, false);
+        }
+    }
+    
     /**
      * MemberForm生成.
      * 登録用のMemberFormを生成します。

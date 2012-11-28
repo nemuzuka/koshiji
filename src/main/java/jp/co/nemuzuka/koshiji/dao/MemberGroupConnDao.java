@@ -15,6 +15,7 @@
  */
 package jp.co.nemuzuka.koshiji.dao;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -86,15 +87,31 @@ public class MemberGroupConnDao extends AbsDao {
     /**
      * 一覧取得.
      * 指定したGroupKeyに紐付く一覧を取得します。
-     * @param key groupKey
+     * @param groupKey groupKey
      * @return 該当レコード
      */
     public List<MemberGroupConnModel> getMemberList(Key groupKey) {
+        return getMemberList(new Key[]{groupKey});
+    }
+    
+    /**
+     * 一覧取得.
+     * 指定したGroupKeyに紐付く一覧を取得します。
+     * @param groupKeys groupKey配列
+     * @return 該当レコード
+     */
+    public List<MemberGroupConnModel> getMemberList(Key...groupKeys) {
+        
+        if(groupKeys == null || groupKeys.length == 0) {
+            return new ArrayList<MemberGroupConnModel>();
+        }
+        
         MemberGroupConnModelMeta e = (MemberGroupConnModelMeta) getModelMeta();
         Set<FilterCriterion> filter = new HashSet<FilterCriterion>();
-        filter.add(e.groupKey.equal(groupKey));
+        filter.add(e.groupKey.in(groupKeys));
         return getList(filter, null, e.admin.desc, e.key.asc);
     }
+    
     
     /**
      * Set取得.
